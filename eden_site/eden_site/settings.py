@@ -49,7 +49,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
      # Admin panel and documentation:
     'nested_admin',
-    #'south',
+    'django_baker',
     'plantdb',
 )
 
@@ -88,26 +88,26 @@ WSGI_APPLICATION = 'eden_site.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 # Added database settingd from environment variables
 # DJANGO_USER & DJANGO_PASSWORD
 # Usually set in .bashrc
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'plantdb',
-#         'USER': get_env_variable('DJANGO_USER'),
-#         'PASSWORD': get_env_variable('DJANGO_PASSWORD'),
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-# }
+DATABASES = {
+     'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'plantdb',
+        'USER': get_env_variable('DJANGO_USER'),
+        'PASSWORD': get_env_variable('DJANGO_PASSWORD'),
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

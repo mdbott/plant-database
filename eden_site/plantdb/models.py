@@ -246,7 +246,7 @@ class Cultivar(models.Model):
     production_startmonth = models.IntegerField(blank=True, null=True)
     months_in_production = models.IntegerField(blank=True, null=True)
     seed_start_month = models.IntegerField(blank=True, null=True)
-    months_seed_ripe = models.BooleanField(default=False)
+    months_seed_ripe = models.IntegerField(blank=True, null=True)
     # Equivalent to 'F' full shade in pfaf shade rating
     # semi_shade              = models.BooleanField(default=True)  # Equivalent to 'S' semi shade in pfaf shade rating
     # no_shade                = models.BooleanField(default=True)  # Equivalent to 'N' no shade in pfaf shade rating
