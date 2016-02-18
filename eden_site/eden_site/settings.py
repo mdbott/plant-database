@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
      # Admin panel and documentation:
     'nested_admin',
     'django_baker',
@@ -100,7 +101,8 @@ WSGI_APPLICATION = 'eden_site.wsgi.application'
 
 DATABASES = {
      'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'plantdb',
         'USER': get_env_variable('DJANGO_USER'),
         'PASSWORD': get_env_variable('DJANGO_PASSWORD'),
