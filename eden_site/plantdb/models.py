@@ -1,5 +1,19 @@
 # from django.db import models
 from django.contrib.gis.db import models
+# from threading import local
+#
+# _thread_locals = local()
+#
+#
+# def get_rootstock_list():
+#     return getattr(getattr(_thread_locals, 'user', None), 'id', None)
+#
+#
+# class ThreadLocals(object):
+#     """Middleware that gets various objects from the
+#     request object and saves them in thread local storage."""
+#     def process_request(self, request):
+#         _thread_locals.user = getattr(request, 'user', None)
 
 # Create your models here.
 # Mineral Class Definitions
@@ -152,6 +166,35 @@ class Plant(models.Model):
             (DeepShade, 'Deep Shade'),
         )
 
+    # Plant Uses
+    Productive = 1
+    Support = 2
+    Weed = 3
+    Native = 4
+    Uses = (
+        (Productive, 'Productive Species'),
+        (Support, 'Support Species'),
+        (Weed, 'Weed/Volunteer Species'),
+        (Native, 'Native Species')
+    )
+    # Plant Form
+    LargeTree = 1
+    MediumTree = 2
+    SmallTree = 3
+    Shrub = 4
+    ProstrateShrub = 5
+    Vine = 6
+    Herbaceous = 7
+    Form = (
+        (LargeTree, 'Large Tree'),
+        (MediumTree, 'Medium Tree'),
+        (SmallTree, 'Small Tree'),
+        (Shrub, 'Shrub'),
+        (ProstrateShrub, 'Prostrate Shrub'),
+        (Vine, 'Vine'),
+        (Herbaceous, 'Herbaceous Species')
+    )
+
     legacy_pfaf_latin_name = models.CharField(max_length=200, blank=True, null=True)
     family = models.CharField(max_length=100, blank=True, null=True)
     genus = models.CharField(max_length=100, blank=True, null=True)
@@ -159,6 +202,8 @@ class Plant(models.Model):
     species = models.CharField(max_length=100, blank=True, null=True)
     ssp = models.CharField(max_length=100, blank=True, null=True)
     common_name = models.CharField(max_length=100, blank=True, null=True)
+    uses = models.IntegerField(blank=True, choices=Uses, null=True)
+    form = models.IntegerField(blank=True, choices=Form, null=True)
     habitat = models.CharField(max_length=1024, blank=True, null=True)
     wind_lower_limit = models.IntegerField(blank=True, choices=WindLevel, null=True)
     wind_upper_limit = models.IntegerField(blank=True, choices=WindLevel, null=True)
@@ -256,6 +301,7 @@ class Rootstock(models.Model):
         (High, 'High'),
     )
     name = models.CharField(max_length=100, default='Base Rootstock')
+    base_rootstock = models.BooleanField(default=False)
     notes_on_rootstock = models.TextField(blank=True, null=True)
     plant = models.ForeignKey(Plant)
     height = models.DecimalField(blank=True, null=True, max_digits=5, decimal_places=2)
@@ -280,6 +326,19 @@ class Rootstock(models.Model):
 
     class Meta:
         unique_together = ('name', 'plant')
+
+    # def _product_list(self, cls):
+    #     """
+    #     return a list containing the one product_id contained in the request URL,
+    #     or a query containing all valid product_ids if not id present in URL
+    #
+    #     used to limit the choice of foreign key object to those related to the current product
+    #     """
+    #     id = threadlocals.get_current_product()
+    #     if id is not None:
+    #         return [id]
+    #     else:
+    #         return Product.objects.all().values('pk').query
 
 
 class ReferenceList(models.Model):
@@ -369,6 +428,7 @@ class Cultivar(models.Model):
         (DECEMBER, 'December')
     )
     name = models.CharField(max_length=100, default='Base Cultivar', blank=True)
+    base_cultivar = models.BooleanField(default=False)
     notes_on_cultivar = models.TextField(blank=True, null=True)
     synonyms = models.TextField(blank=True, null=True)
     plant = models.ForeignKey(Plant)
@@ -518,9 +578,86 @@ class Comments(models.Model):
     modified = models.DateTimeField()
 
 
+# GeoDjango Models
+
 class Vegetation(models.Model):
     plant = models.ForeignKey(Plant)
+    cultivar = models.ForeignKey(Cultivar)
+    rootstock = models.ForeignKey(Rootstock)
     locations = models.PointField()
     comment = models.CharField(max_length=50, blank=True, null=False)
     germination_date = models.DateTimeField(blank=True, null=True)
+    objects = models.GeoManager()
+
+    def __unicode__(self):
+        return "%s (Cultivar: %s, %s Rootstock)" % (self.plant, self.cultivar, self.rootstock)
+
+    class Meta:
+        verbose_name = 'Planting'
+
+
+class MoistureZone(models.Model):
+    Low = 1
+    Medium = 2
+    High = 3
+    MoistureLevel = (
+        (Low, 'Low'),
+        (Medium, 'Medium'),
+        (High, 'High'),
+    )
+    moisturelevel = models.IntegerField(choices=MoistureLevel)
+    locations = models.MultiPolygonField()
+    objects = models.GeoManager()
+
+
+class SalinityZone(models.Model):
+    Low = 1
+    Medium = 2
+    High = 3
+    SalinityLevel = (
+        (Low, 'Low 2-4 dS/m'),
+        (Medium, 'Medium 4-8 dS/m'),
+        (High, 'High 8+ dS/m'),
+    )
+    salinitylevel = models.IntegerField(choices=SalinityLevel)
+    locations = models.MultiPolygonField()
+    objects = models.GeoManager()
+
+
+class pHZone(models.Model):
+
+    pHlevel = MinMaxFloat(min_value=4.0, max_value=10.0)
+    locations = models.MultiPolygonField()
+    objects = models.GeoManager()
+
+
+class WindZone(models.Model):
+    Calm = 0                # 1 km/hr
+    LightAir = 1            # 2-5 km/hr
+    LightBreeze = 2         # 6-11 km/hr
+    GentleBreeze = 3        # 12-19 km/hr
+    ModerateBreeze = 4      # 20-28 km/hr
+    FreshBreeze = 5         # 29-38 km/hr
+    StrongBreeze = 6        # 39-49 km/hr
+    NearGale = 7            # 50-61 km/hr
+    Gale = 8                # 62-74 km/hr
+    SevereGale = 9          # 75-88 km/hr
+    Storm = 10              # 89-102 km/hr
+
+    WindLevel = (
+        (Calm, 'Calm'),
+        (LightAir, 'Light Air'),
+        (LightBreeze, 'Light Breeze'),
+        (GentleBreeze, 'Gentle Breeze'),
+        (ModerateBreeze, 'Moderate Breeze'),
+        (FreshBreeze, 'Fresh Breeze'),
+        (StrongBreeze, 'Strong Breeze'),
+        (NearGale, 'Near Gale'),
+        (Gale, 'Gale'),
+        (SevereGale, 'Severe Gale'),
+        (Storm, 'Storm')
+    )
+
+    windlevel = models.IntegerField(choices=WindLevel)
+    locations = models.MultiPolygonField()
     objects = models.GeoManager()

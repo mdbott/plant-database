@@ -1,8 +1,12 @@
-from django.contrib import admin
+# from django.contrib import admin
+from django import forms
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.gis import admin
 from nested_admin import NestedStackedInline, TabularInline, NestedAdmin
 from .models import Plant, Cultivar, Rootstock, MineralInteraction, LocationInteraction, Edible, \
     RootPathogenResistance
-from .models import Mineral, PlantLocation, ReferenceList, EdibleType, RootPathogen
+from .models import Mineral, PlantLocation, ReferenceList, EdibleType, RootPathogen, Vegetation, MoistureZone, \
+    SalinityZone, pHZone, WindZone
 
 
 # class SoilRequirementInline(TabularInline):
@@ -97,3 +101,43 @@ class EdibleTypeAdmin(admin.ModelAdmin):
     ordering = ['name']
 
 admin.site.register(EdibleType, EdibleTypeAdmin)
+
+
+class VegetationAdminForm(forms.ModelForm):
+    class Meta:
+        model = Vegetation
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super(VegetationAdminForm, self).__init__(*args, **kwargs)
+        if self.instance and self.has_related_plant():
+            self.fields['rootstock'].queryset = Rootstock.objects.filter(plant=self.instance.plant)
+            self.fields['cultivar'].queryset = Cultivar.objects.filter(plant=self.instance.plant)
+
+    def has_related_plant(self):
+        has_plant = False
+        try:
+            has_plant = (self.instance.plant is not None)
+        except ObjectDoesNotExist:
+            pass
+        return has_plant
+
+
+class VegetationAdmin(admin.OSMGeoAdmin):
+    form = VegetationAdminForm
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.rootstock = Rootstock.objects.filter(plant=obj.plant, base_rootstock=True).first()
+            obj.cultivar = Cultivar.objects.filter(plant=obj.plant, base_cultivar=True).first()
+        obj.save()
+
+admin.site.register(Vegetation, VegetationAdmin)
+
+admin.site.register(MoistureZone, admin.OSMGeoAdmin)
+
+admin.site.register(SalinityZone, admin.OSMGeoAdmin)
+
+admin.site.register(pHZone, admin.OSMGeoAdmin)
+
+admin.site.register(WindZone, admin.OSMGeoAdmin)
