@@ -1,5 +1,7 @@
 # from django.db import models
 from django.contrib.gis.db import models
+from colorfield.fields import ColorField
+from .fields import RGBColorField
 # from threading import local
 #
 # _thread_locals = local()
@@ -21,13 +23,14 @@ from django.contrib.gis.db import models
 # This arrangement allows the enumeration of the minerals that
 # each plant requires or provides
 
+
 class MinMaxFloat(models.FloatField):
     def __init__(self, min_value=None, max_value=None, *args, **kwargs):
         self.min_value, self.max_value = min_value, max_value
         super(MinMaxFloat, self).__init__(*args, **kwargs)
 
     def formfield(self, **kwargs):
-        defaults = {'min_value': self.min_value, 'max_value' : self.max_value}
+        defaults = {'min_value': self.min_value, 'max_value': self.max_value}
         defaults.update(kwargs)
         return super(MinMaxFloat, self).formfield(**defaults)
 
@@ -130,7 +133,44 @@ class Propagation(models.Model):
     description = models.TextField(max_length=100, blank=True)
 
 
+class PlantUse(models.Model):
+
+    use = models.CharField(max_length=20)
+    description = models.TextField(max_length=100, blank=True, null=True)
+
+    def __unicode__(self):
+        return "%s" % self.use
+
+
+class References(models.Model):
+
+    RefRating = (
+            (1, '1'),
+            (2, '2'),
+            (3, '3'),
+            (4, '4'),
+            (5, '5')
+        )
+
+    title = models.CharField(max_length=100)
+    author = models.CharField(max_length=50, blank=True, null=True)
+    internet_address = models.CharField(max_length=30, blank=True, null=True)
+    rating = models.IntegerField(blank=True, choices=RefRating, null=True)
+    publisher = models.CharField(max_length=100, blank=True, null=True)
+    publication_year = models.IntegerField(blank=True, null=True)
+    isbn = models.CharField(max_length=30, blank=True, null=True)
+    comments = models.TextField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.title
+
+
+class ColourTest(models.Model):
+    border_colour = RGBColorField(default='#00FF00')
+
+
 class Plant(models.Model):
+    Unknown = -1
     Calm = 0                # 1 km/hr
     LightAir = 1            # 2-5 km/hr
     LightBreeze = 2         # 6-11 km/hr
@@ -144,6 +184,7 @@ class Plant(models.Model):
     Storm = 10              # 89-102 km/hr
 
     WindLevel = (
+        (Unknown, 'Not known'),
         (Calm, 'Calm'),
         (LightAir, 'Light Air'),
         (LightBreeze, 'Light Breeze'),
@@ -166,33 +207,81 @@ class Plant(models.Model):
             (DeepShade, 'Deep Shade'),
         )
 
-    # Plant Uses
+    # Plant Function
     Productive = 1
     Support = 2
     Weed = 3
     Native = 4
-    Uses = (
+    PlantFunction = (
         (Productive, 'Productive Species'),
         (Support, 'Support Species'),
         (Weed, 'Weed/Volunteer Species'),
         (Native, 'Native Species')
     )
     # Plant Form
-    LargeTree = 1
-    MediumTree = 2
-    SmallTree = 3
-    Shrub = 4
-    ProstrateShrub = 5
-    Vine = 6
-    Herbaceous = 7
+    LargeTree = 12
+    MediumTree = 11
+    SmallTree = 10
+    Bamboo = 9
+    Shrub = 8
+    Fern = 7
+    ProstrateShrub = 6
+    Vine = 5
+    Herbaceous = 4
+    Bulb = 3
+    Biennial = 2
+    Annual = 1
     Form = (
         (LargeTree, 'Large Tree'),
         (MediumTree, 'Medium Tree'),
         (SmallTree, 'Small Tree'),
         (Shrub, 'Shrub'),
+        (Fern, 'Fern'),
         (ProstrateShrub, 'Prostrate Shrub'),
         (Vine, 'Vine'),
-        (Herbaceous, 'Herbaceous Species')
+        (Herbaceous, 'Herbaceous Species'),
+        (Bulb, 'Corm/Bulb'),
+        (Biennial, 'Biennial'),
+        (Annual, 'Annual Species')
+    )
+
+    PlantShape = (
+        ('Spike_1', 'Spiked Form 1'),
+        ('Spike_2', 'Spiked Form 2'),
+        ('Spike_3', 'Spiked Form 3'),
+        ('Spike_4', 'Spiked Form 4'),
+        ('Mounded_1', 'Mounded Form 1'),
+        ('Mounded_2', 'Mounded Form 2'),
+        ('Prostrate_1', 'Prostrate Form 1'),
+        ('Prostrate_2', 'Prostrate Form 2'),
+        ('Prostrate_3', 'Prostrate Form 3'),
+        ('Prostrate_4', 'Prostrate Form 4'),
+        ('Fountain_1', 'Fountain Form 1'),
+        ('Fountain_2', 'Fountain Form 2'),
+        ('Columnar_1', 'Columnar Form 1'),
+        ('Oval_1', 'Oval Form 1'),
+        ('Pyramidal_1', 'Pyramidal Form 1'),
+        ('Rounded_1', 'Rounded Form 1'),
+        ('Rounded_2', 'Rounded Form 2'),
+        ('Spreading_1', 'Spreading Form 1'),
+        ('Spreading_2', 'Spreading Form 2'),
+        ('Vase_1', 'Vase Form 1'),
+        ('Vase_2', 'Vase Form 2'),
+        ('Vase_3', 'Vase Form 3'),
+        ('Vase_4', 'Vase Form 4'),
+        ('Weeping_1', 'Weeping Form 1')
+    )
+
+    # Flower Type
+    Hermaphrodite = 1
+    Monoecious = 2
+    Dioecious = 3
+    FlowerType = (
+        (Hermaphrodite, 'Hermaphrodite (the flower has both male and female organs)'),
+        (Monoecious, 'Monoecious (individual flowers are either male or female, but both sexes can be found on the \
+        same plant)'),
+        (Dioecious, 'dioecious (individual flowers are either male or female, but only one sex is to be found on \
+        any one plant so both male and female plants must be grown if seed is required)')
     )
 
     legacy_pfaf_latin_name = models.CharField(max_length=200, blank=True, null=True)
@@ -202,9 +291,14 @@ class Plant(models.Model):
     species = models.CharField(max_length=100, blank=True, null=True)
     ssp = models.CharField(max_length=100, blank=True, null=True)
     common_name = models.CharField(max_length=100, blank=True, null=True)
-    uses = models.IntegerField(blank=True, choices=Uses, null=True)
+    plant_function = models.IntegerField(blank=True, choices=PlantFunction, null=True)
+    plant_uses = models.ManyToManyField(PlantUse, blank=True, through='Usage')
     form = models.IntegerField(blank=True, choices=Form, null=True)
     habitat = models.CharField(max_length=1024, blank=True, null=True)
+    # icon_path = models.CharField(max_length=100, blank=True, null=True)
+    border_colour = RGBColorField(default='#00FF00')
+    fill_colour = RGBColorField(default='#000000')
+    symbol = models.CharField(max_length=50, default='Rounded_1', choices=PlantShape)
     wind_lower_limit = models.IntegerField(blank=True, choices=WindLevel, null=True)
     wind_upper_limit = models.IntegerField(blank=True, choices=WindLevel, null=True)
     light_lower_limit = models.IntegerField(blank=True, choices=LightLevel, null=True)
@@ -212,10 +306,10 @@ class Plant(models.Model):
     deciduous_evergreen = models.CharField(max_length=1024, blank=True, default='D', null=True)
     nitrogen_fixer = models.BooleanField(default=False)
     supports_wildlife = models.BooleanField(default=False)
-    flower_type = models.CharField(max_length=2048, blank=True, default='N', null=True)
+    flower_type = models.IntegerField(blank=True, choices=FlowerType, null=True)
     pollinators = models.CharField(max_length=1024, blank=True, default='N', null=True)
     self_fertile = models.BooleanField(default=False)
-    scented = models.CharField(max_length=1024, blank=True, default='N', null=True)
+
     pollution = models.BooleanField(default=False)
     mineralInteraction = models.ManyToManyField(Mineral, blank=True, through='MineralInteraction')
     locationInteraction = models.ManyToManyField(PlantLocation, blank=True, through='LocationInteraction')
@@ -223,6 +317,7 @@ class Plant(models.Model):
     cultivation_details = models.TextField(max_length=10024, blank=True, null=True)
     propagation_details = models.ManyToManyField(Propagation, blank=True, through='PropagationDetails')
     known_hazards = models.TextField(blank=True, null=True)
+    references = models.ManyToManyField(References, blank=True, through='ReferenceDetail')
 
     # class Meta:
     #    unique_together = ('family' , 'genus' , 'species' , 'ssp')
@@ -251,12 +346,12 @@ class Plant(models.Model):
     #     (SALINITY, 'Soil Salinity'),
     # )
 
-    # name = models.CharField(max_length=20, choices=PROPERTY)
+    # use = models.CharField(max_length=20, choices=PROPERTY)
     # # models.IntegerField(blank=True, choices=INTPROPERTY)
     # description = models.CharField(max_length=100, blank=True)
     #
     # def __unicode__(self):
-    #     return self.name
+    #     return self.use
     #
     # class Meta:
     #     verbose_name_plural = "Soil Properties"
@@ -274,10 +369,7 @@ class Plant(models.Model):
 #
 class RootPathogen(models.Model):
 
-
-
     name = models.CharField(max_length=50)
-
 
     def __unicode__(self):
         return self.name
@@ -295,10 +387,23 @@ class Rootstock(models.Model):
         (Medium, 'Medium 4-8 dS/m'),
         (High, 'High 8+ dS/m'),
     )
+    Dry = 1
+    Moist = 2
+    Wet = 3
+    Water = 4
     MoistureLevel = (
-        (Low, 'Low'),
-        (Medium, 'Medium'),
-        (High, 'High'),
+        (Dry, 'Dry Soil'),
+        (Moist, 'Moist Soil'),
+        (Wet, 'Wet Soil'),
+        (Water, 'Water')
+    )
+    Light = 1
+    Medium = 2
+    Heavy = 3
+    SoilTexture = (
+        (Light, 'Light (sandy) soil'),
+        (Medium, 'Medium (loamy) soil'),
+        (Heavy, 'Heavy (clay) soil')
     )
     name = models.CharField(max_length=100, default='Base Rootstock')
     base_rootstock = models.BooleanField(default=False)
@@ -313,12 +418,8 @@ class Rootstock(models.Model):
     salinity_upper_limit = models.IntegerField(blank=True, choices=SalinityLevel, null=True)
     moisture_lower_limit = models.IntegerField(blank=True, choices=MoistureLevel, null=True)
     moisture_upper_limit = models.IntegerField(blank=True, choices=MoistureLevel, null=True)
-    # soilinteractions = models.ManyToManyField(SoilProperty, blank=True, through='SoilRequirement')
-    # This will characterize soil interactions of the Plant with
-    # - Soil Texture (Heavy, Medium)
-    # - Salinity (High, Average, Low)
-    # - Moisture Level ( Moist, Average, Dry)
-    # - pH (Numeric)
+    soiltexture_lower_limit = models.IntegerField(blank=True, choices=SoilTexture, null=True)
+    soiltexture_upper_limit = models.IntegerField(blank=True, choices=SoilTexture, null=True)
     soildiseaseinteractions = models.ManyToManyField(RootPathogen, blank=True, through='RootPathogenResistance')
 
     def __unicode__(self):
@@ -341,13 +442,14 @@ class Rootstock(models.Model):
     #         return Product.objects.all().values('pk').query
 
 
-class ReferenceList(models.Model):
-    title = models.CharField(max_length=30, blank=True, null=True)
-    author = models.CharField(max_length=100, blank=True, null=True)
-    comments = models.CharField(max_length=30, blank=True, null=True)
-    publisher = models.CharField(max_length=100, blank=True, null=True)
-    publication_date = models.DateTimeField(blank=True, null=True)
-    isbn = models.CharField(max_length=100, blank=True, null=True)
+# class ReferenceList(models.Model):
+#     title = models.CharField(max_length=30, blank=True, null=True)
+#     author = models.CharField(max_length=100, blank=True, null=True)
+#     internet_address = models.CharField(max_length=30, blank=True, null=True)
+#     comments = models.CharField(max_length=30, blank=True, null=True)
+#     publisher = models.CharField(max_length=100, blank=True, null=True)
+#     publication_date = models.DateTimeField(blank=True, null=True)
+#     isbn = models.CharField(max_length=100, blank=True, null=True)
 
 
 # Soil Relation Tables for the each Rootstock
@@ -392,11 +494,20 @@ class RootPathogenResistance(models.Model):
         ordering = ['rootstock']
 
 
-class EdibleType(models.Model):
-    name = models.CharField(max_length=20, blank=True)
+class EdibleUse(models.Model):
+    use = models.CharField(max_length=20, blank=True)
+    description = models.TextField(max_length=100, blank=True, null=True)
 
     def __unicode__(self):
-        return self.name
+        return self.use
+
+
+class MedicinalUse(models.Model):
+    use = models.CharField(max_length=20, blank=True)
+    description = models.TextField(max_length=100, blank=True, null=True)
+
+    def __unicode__(self):
+        return self.use
 
 
 class Cultivar(models.Model):
@@ -432,9 +543,9 @@ class Cultivar(models.Model):
     notes_on_cultivar = models.TextField(blank=True, null=True)
     synonyms = models.TextField(blank=True, null=True)
     plant = models.ForeignKey(Plant)
-    edible = models.ManyToManyField(EdibleType, blank=True, through='Edible')
-    edibility_rating = models.IntegerField(blank=True, null=True)
-    medicinal_rating = models.IntegerField(blank=True, null=True)
+    edible = models.ManyToManyField(EdibleUse, blank=True, through='Edible')
+    medicinal = models.ManyToManyField(MedicinalUse, blank=True, through='Medicinal')
+    scented = models.NullBooleanField(default=False, blank=True, null=True)
     wind_tolerance = models.IntegerField(blank=True, null=True)
     upperhardiness = models.IntegerField(default=0, blank=True, null=True)
     range = models.CharField(max_length=100, blank=True, null=True)
@@ -460,37 +571,73 @@ class Cultivar(models.Model):
 
 class Edible(models.Model):
 
-    RATING = (
-            ('Poor', 'Poor'),
-            ('Fair', 'Fair'),
-            ('Good', 'Good'),
-            ('Excellent', 'Excellent'))
+    Edibility = (
+            (1, 'Poor'),
+            (2, 'Moderate'),
+            (3, 'Average'),
+            (4, 'Good'),
+            (5, 'Excellent'))
 
     plant = models.ForeignKey(Cultivar, related_name='plant_entries')
-    edible_part = models.ForeignKey(EdibleType)
-    ediblity_rating = models.CharField(max_length=20, choices=RATING, blank=True)
-    edible_link = models.ManyToManyField(ReferenceList, blank=True, through='EdibleReference')
-    notes = models.TextField(max_length=100, blank=True)
+    edible_use = models.ForeignKey(EdibleUse)
+    edibility_rating = models.IntegerField(blank=True, choices=Edibility, null=True)
+    #edible_link = models.ManyToManyField(ReferenceList, blank=True, through='EdibleReference')
+    notes = models.TextField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        ordering = ['plant']
+
+
+class Medicinal(models.Model):
+
+    MedicinalValue = (
+            (1, 'Poor'),
+            (2, 'Moderate'),
+            (3, 'Average'),
+            (4, 'Good'),
+            (5, 'Excellent'))
+
+    plant = models.ForeignKey(Cultivar, related_name='plant_entry')
+    medicinal_use = models.ForeignKey(MedicinalUse)
+    medicinal_rating = models.IntegerField(blank=True, choices=MedicinalValue, null=True)
+    #medicinal_link = models.ManyToManyField(ReferenceList, blank=True, through='MedicinalReference')
+    notes = models.TextField(max_length=100, blank=True, null=True)
 
     class Meta:
         ordering = ['plant']
 
 
 # Plant Mineral Relationship Class
-class EdibleReference(models.Model):
+# class EdibleReference(models.Model):
+#
+#     CATEGORIES = (
+#         ('Page Reference', 'Page Reference'),
+#         ('Website', 'Website'),
+#         ('Journal', 'Journal'))
+#
+#     #referenceLink = models.ForeignKey(ReferenceList)
+#     edible = models.ForeignKey(Edible)
+#     reference = models.CharField(max_length=20, choices=CATEGORIES, blank=True)
+#     notes = models.CharField(max_length=100, blank=True)
+#
+#     class Meta:
+#         ordering = ['edible']
 
-    CATEGORIES = (
-        ('Page Reference', 'Page Reference'),
-        ('Website', 'Website'),
-        ('Journal', 'Tolerates'))
 
-    referenceLink = models.ForeignKey(ReferenceList)
-    edible = models.ForeignKey(Edible)
-    reference = models.CharField(max_length=20, choices=CATEGORIES, blank=True)
-    notes = models.CharField(max_length=100, blank=True)
-
-    class Meta:
-        ordering = ['edible']
+# class MedicinalReference(models.Model):
+#
+#     CATEGORIES = (
+#         ('Page Reference', 'Page Reference'),
+#         ('Website', 'Website'),
+#         ('Journal', 'Journal'))
+#
+#     referenceLink = models.ForeignKey(ReferenceList)
+#     medicinalDetail = models.ForeignKey(Medicinal)
+#     reference = models.CharField(max_length=20, choices=CATEGORIES, blank=True)
+#     notes = models.CharField(max_length=100, blank=True)
+#
+#     class Meta:
+#         ordering = ['medicinalDetail']
 
 
 # Plant Mineral Relationship Class
@@ -563,7 +710,27 @@ class PropagationDetails(models.Model):
     propagationMode = models.ForeignKey(Propagation)
     startMonth = models.IntegerField(blank=True)
     numberOfMonths = models.IntegerField(blank=True)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['plant']
+
+
+class ReferenceDetail(models.Model):
+
+    plant = models.ForeignKey(Plant)
+    reference = models.ForeignKey(References)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['plant']
+
+
+class Usage(models.Model):
+
+    plant = models.ForeignKey(Plant)
+    plant_use = models.ForeignKey(PlantUse)
+    description = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ['plant']

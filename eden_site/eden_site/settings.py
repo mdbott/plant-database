@@ -51,6 +51,7 @@ INSTALLED_APPS = (
      # Admin panel and documentation:
     'nested_admin',
     'django_baker',
+    'colorfield',
     'plantdb',
 )
 
