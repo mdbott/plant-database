@@ -125,10 +125,10 @@
     </attributes>
   </connection>
   <order>
-  <hop> <from>Edible Uses table input</from><to>Table output</to><enabled>Y</enabled> </hop>
-  <hop> <from>Medicinal Uses Table Input</from><to>Table output 2</to><enabled>Y</enabled> </hop>
-  <hop> <from>Plant Uses Table Input</from><to>Table output 3</to><enabled>Y</enabled> </hop>
-  <hop> <from>Booklist Table Input</from><to>Table output 3 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>Edible Uses table input</from><to>Table output edibleuse</to><enabled>Y</enabled> </hop>
+  <hop> <from>Medicinal Uses Table Input</from><to>Table output medicinaluse</to><enabled>Y</enabled> </hop>
+  <hop> <from>Plant Uses Table Input</from><to>Table output plantuse</to><enabled>Y</enabled> </hop>
+  <hop> <from>Booklist Table Input</from><to>Table output references</to><enabled>Y</enabled> </hop>
   </order>
   <step>
     <name>Booklist Table Input</name>
@@ -235,7 +235,7 @@
     </step>
 
   <step>
-    <name>Table output</name>
+    <name>Table output edibleuse</name>
     <type>TableOutput</type>
     <description/>
     <distribute>Y</distribute>
@@ -281,7 +281,7 @@
     </step>
 
   <step>
-    <name>Table output 2</name>
+    <name>Table output medicinaluse</name>
     <type>TableOutput</type>
     <description/>
     <distribute>Y</distribute>
@@ -327,7 +327,7 @@
     </step>
 
   <step>
-    <name>Table output 3</name>
+    <name>Table output plantuse</name>
     <type>TableOutput</type>
     <description/>
     <distribute>Y</distribute>
@@ -373,7 +373,7 @@
     </step>
 
   <step>
-    <name>Table output 3 2</name>
+    <name>Table output references</name>
     <type>TableOutput</type>
     <description/>
     <distribute>Y</distribute>

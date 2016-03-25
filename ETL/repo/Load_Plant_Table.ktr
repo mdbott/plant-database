@@ -129,7 +129,6 @@
   <order>
   <hop> <from>Table input</from><to>Sort rows</to><enabled>Y</enabled> </hop>
   <hop> <from>Select values</from><to>Split the Latin Name</to><enabled>Y</enabled> </hop>
-  <hop> <from>If field value is null</from><to>Plant Table Output</to><enabled>Y</enabled> </hop>
   <hop> <from>Set field value to a constant</from><to>If field value is null</to><enabled>Y</enabled> </hop>
   <hop> <from>If field value is null</from><to>Microsoft Excel Output</to><enabled>N</enabled> </hop>
   <hop> <from>Add sequence</from><to>Add constants</to><enabled>Y</enabled> </hop>
@@ -146,11 +145,13 @@
   <hop> <from>Value Mapper moisture upper</from><to>Value Mapper soiltexture lower</to><enabled>Y</enabled> </hop>
   <hop> <from>Value Mapper soiltexture lower</from><to>Value Mapper soiltexture upper</to><enabled>Y</enabled> </hop>
   <hop> <from>Value Mapper soiltexture upper</from><to>Value Mapper symbol 2</to><enabled>Y</enabled> </hop>
-  <hop> <from>If field value is null</from><to>Cultivar Table output 2</to><enabled>Y</enabled> </hop>
-  <hop> <from>If field value is null</from><to>Rootstock Table output 2</to><enabled>Y</enabled> </hop>
+  <hop> <from>If field value is null</from><to>Rootstock Table output</to><enabled>Y</enabled> </hop>
   <hop> <from>Value Mapper symbol 2</from><to>Value Mapper wind upper limit</to><enabled>Y</enabled> </hop>
   <hop> <from>Value Mapper wind upper limit</from><to>Value Mapper wind upper limit 2</to><enabled>Y</enabled> </hop>
-  <hop> <from>Value Mapper wind upper limit 2</from><to>Select values</to><enabled>Y</enabled> </hop>
+  <hop> <from>If field value is null</from><to>Cultivar Table output</to><enabled>Y</enabled> </hop>
+  <hop> <from>If field value is null</from><to>Plant Table output</to><enabled>N</enabled> </hop>
+  <hop> <from>Value Mapper wind upper limit 2</from><to>Value Mapper flower type</to><enabled>Y</enabled> </hop>
+  <hop> <from>Value Mapper flower type</from><to>Select values</to><enabled>Y</enabled> </hop>
   </order>
   <step>
     <name>Add constants</name>
@@ -275,7 +276,7 @@
     </step>
 
   <step>
-    <name>Cultivar Table output 2</name>
+    <name>Cultivar Table output</name>
     <type>TableOutput</type>
     <description/>
     <distribute>Y</distribute>
@@ -308,26 +309,6 @@
           <stream_name>plantid</stream_name>
         </field>
         <field>
-          <column_name>seed_start_month</column_name>
-          <stream_name>seed_startmonth</stream_name>
-        </field>
-        <field>
-          <column_name>seed_endmonth</column_name>
-          <stream_name>seed_endmonth</stream_name>
-        </field>
-        <field>
-          <column_name>base_cultivar</column_name>
-          <stream_name>base_cultivar</stream_name>
-        </field>
-        <field>
-          <column_name>flower_startmonth</column_name>
-          <stream_name>flowering_startmonth</stream_name>
-        </field>
-        <field>
-          <column_name>flower_endmonth</column_name>
-          <stream_name>flowering_endmonth</stream_name>
-        </field>
-        <field>
           <column_name>name</column_name>
           <stream_name>cultivar_name</stream_name>
         </field>
@@ -343,11 +324,35 @@
           <column_name>leaf_endmonth</column_name>
           <stream_name>in_leaf_endmonth</stream_name>
         </field>
+        <field>
+          <column_name>flower_startmonth</column_name>
+          <stream_name>flowering_startmonth</stream_name>
+        </field>
+        <field>
+          <column_name>flower_endmonth</column_name>
+          <stream_name>flowering_endmonth</stream_name>
+        </field>
+        <field>
+          <column_name>seed_start_month</column_name>
+          <stream_name>seed_startmonth</stream_name>
+        </field>
+        <field>
+          <column_name>seed_endmonth</column_name>
+          <stream_name>seed_endmonth</stream_name>
+        </field>
+        <field>
+          <column_name>base_cultivar</column_name>
+          <stream_name>base_cultivar</stream_name>
+        </field>
+        <field>
+          <column_name>hardiness</column_name>
+          <stream_name>Hardyness</stream_name>
+        </field>
     </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>1376</xloc>
-      <yloc>400</yloc>
+      <yloc>480</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -876,153 +881,7 @@
     </step>
 
   <step>
-    <name>Plant Table Output</name>
-    <type>TableOutput</type>
-    <description/>
-    <distribute>N</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <connection>plantdb</connection>
-    <schema>public</schema>
-    <table>plantdb_plant</table>
-    <commit>8000</commit>
-    <truncate>N</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>N</use_batch>
-    <specify_fields>Y</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
-    <tablename_in_table>N</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field/>
-    <fields>
-        <field>
-          <column_name>id</column_name>
-          <stream_name>plantid</stream_name>
-        </field>
-        <field>
-          <column_name>legacy_pfaf_latin_name</column_name>
-          <stream_name>legacy_pfaf_latin_name</stream_name>
-        </field>
-        <field>
-          <column_name>common_name</column_name>
-          <stream_name>common_name</stream_name>
-        </field>
-        <field>
-          <column_name>family</column_name>
-          <stream_name>family</stream_name>
-        </field>
-        <field>
-          <column_name>known_hazards</column_name>
-          <stream_name>known_hazards</stream_name>
-        </field>
-        <field>
-          <column_name>nitrogen_fixer</column_name>
-          <stream_name>nitrogen_fixer</stream_name>
-        </field>
-        <field>
-          <column_name>fill_colour</column_name>
-          <stream_name>fill_colour</stream_name>
-        </field>
-        <field>
-          <column_name>border_colour</column_name>
-          <stream_name>border_colour</stream_name>
-        </field>
-        <field>
-          <column_name>supports_wildlife</column_name>
-          <stream_name>supports_wildlife</stream_name>
-        </field>
-        <field>
-          <column_name>habitat</column_name>
-          <stream_name>habitat</stream_name>
-        </field>
-        <field>
-          <column_name>flower_type</column_name>
-          <stream_name>flower_type</stream_name>
-        </field>
-        <field>
-          <column_name>pollinators</column_name>
-          <stream_name>pollinators</stream_name>
-        </field>
-        <field>
-          <column_name>scented</column_name>
-          <stream_name>scented</stream_name>
-        </field>
-        <field>
-          <column_name>pollution</column_name>
-          <stream_name>pollution</stream_name>
-        </field>
-        <field>
-          <column_name>cultivation_details</column_name>
-          <stream_name>cultivation_details</stream_name>
-        </field>
-        <field>
-          <column_name>genus</column_name>
-          <stream_name>genus</stream_name>
-        </field>
-        <field>
-          <column_name>hybrid</column_name>
-          <stream_name>hybrid</stream_name>
-        </field>
-        <field>
-          <column_name>species</column_name>
-          <stream_name>species</stream_name>
-        </field>
-        <field>
-          <column_name>ssp</column_name>
-          <stream_name>ssp</stream_name>
-        </field>
-        <field>
-          <column_name>deciduous_evergreen</column_name>
-          <stream_name>deciduousevergreen</stream_name>
-        </field>
-        <field>
-          <column_name>self_fertile</column_name>
-          <stream_name>self_fertile</stream_name>
-        </field>
-        <field>
-          <column_name>symbol</column_name>
-          <stream_name>symbol</stream_name>
-        </field>
-        <field>
-          <column_name>light_lower_limit</column_name>
-          <stream_name>light_lower_limit</stream_name>
-        </field>
-        <field>
-          <column_name>light_upper_limit</column_name>
-          <stream_name>light_upper_limit</stream_name>
-        </field>
-        <field>
-          <column_name>form</column_name>
-          <stream_name>form</stream_name>
-        </field>
-        <field>
-          <column_name>wind_upper_limit</column_name>
-          <stream_name>wind_upper_limit</stream_name>
-        </field>
-        <field>
-          <column_name>wind_lower_limit</column_name>
-          <stream_name>wind_lower_limit</stream_name>
-        </field>
-    </fields>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>1392</xloc>
-      <yloc>32</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Rootstock Table output 2</name>
+    <name>Rootstock Table output</name>
     <type>TableOutput</type>
     <description/>
     <distribute>Y</distribute>
@@ -1146,8 +1005,8 @@
         <rename>habitat</rename>
         <length>-2</length>
         <precision>-2</precision>
-      </field>      <field>        <name>Flower Type</name>
-        <rename>flower_type</rename>
+      </field>      <field>        <name>flower_type</name>
+        <rename/>
         <length>-2</length>
         <precision>-2</precision>
       </field>      <field>        <name>Pollinators</name>
@@ -1192,10 +1051,6 @@
         <precision>-2</precision>
       </field>      <field>        <name>In leaf end</name>
         <rename>in_leaf_endmonth</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>Acid</name>
-        <rename/>
         <length>-2</length>
         <precision>-2</precision>
       </field>      <field>        <name>Seed ripens</name>
@@ -1307,6 +1162,10 @@
         <length>-2</length>
         <precision>-2</precision>
       </field>      <field>        <name>soiltexture_upper_limit</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>Hardyness</name>
         <rename/>
         <length>-2</length>
         <precision>-2</precision>
@@ -1553,6 +1412,51 @@
         <storage_type/>
       </meta>      <meta>        <name>form</name>
         <rename>form</rename>
+        <type>Integer</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>      <meta>        <name>Scented</name>
+        <rename>Scented</rename>
+        <type>Boolean</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>      <meta>        <name>flower_type</name>
+        <rename>flower_type</rename>
+        <type>Integer</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>      <meta>        <name>Hardyness</name>
+        <rename>Hardyness</rename>
         <type>Integer</type>
         <length>-2</length>
         <precision>-2</precision>
@@ -2612,7 +2516,7 @@
     <name>Value Mapper wind upper limit 2</name>
     <type>ValueMapper</type>
     <description/>
-    <distribute>Y</distribute>
+    <distribute>N</distribute>
     <custom_distribution/>
     <copies>1</copies>
          <partitioning>
@@ -2640,6 +2544,184 @@
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>464</xloc>
       <yloc>288</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Plant Table output</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <connection>plantdb</connection>
+    <schema/>
+    <table>plantdb_plant</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>N</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
+    <fields>
+        <field>
+          <column_name>id</column_name>
+          <stream_name>plantid</stream_name>
+        </field>
+        <field>
+          <column_name>legacy_pfaf_latin_name</column_name>
+          <stream_name>legacy_pfaf_latin_name</stream_name>
+        </field>
+        <field>
+          <column_name>family</column_name>
+          <stream_name>family</stream_name>
+        </field>
+        <field>
+          <column_name>genus</column_name>
+          <stream_name>genus</stream_name>
+        </field>
+        <field>
+          <column_name>hybrid</column_name>
+          <stream_name>hybrid</stream_name>
+        </field>
+        <field>
+          <column_name>species</column_name>
+          <stream_name>species</stream_name>
+        </field>
+        <field>
+          <column_name>ssp</column_name>
+          <stream_name>ssp</stream_name>
+        </field>
+        <field>
+          <column_name>common_name</column_name>
+          <stream_name>common_name</stream_name>
+        </field>
+        <field>
+          <column_name>deciduous_evergreen</column_name>
+          <stream_name>deciduousevergreen</stream_name>
+        </field>
+        <field>
+          <column_name>self_fertile</column_name>
+          <stream_name>self_fertile</stream_name>
+        </field>
+        <field>
+          <column_name>symbol</column_name>
+          <stream_name>symbol</stream_name>
+        </field>
+        <field>
+          <column_name>habitat</column_name>
+          <stream_name>habitat</stream_name>
+        </field>
+        <field>
+          <column_name>border_colour</column_name>
+          <stream_name>border_colour</stream_name>
+        </field>
+        <field>
+          <column_name>fill_colour</column_name>
+          <stream_name>fill_colour</stream_name>
+        </field>
+        <field>
+          <column_name>form</column_name>
+          <stream_name>form</stream_name>
+        </field>
+        <field>
+          <column_name>wind_lower_limit</column_name>
+          <stream_name>wind_lower_limit</stream_name>
+        </field>
+        <field>
+          <column_name>wind_upper_limit</column_name>
+          <stream_name>wind_upper_limit</stream_name>
+        </field>
+        <field>
+          <column_name>light_lower_limit</column_name>
+          <stream_name>light_lower_limit</stream_name>
+        </field>
+        <field>
+          <column_name>light_upper_limit</column_name>
+          <stream_name>light_upper_limit</stream_name>
+        </field>
+        <field>
+          <column_name>nitrogen_fixer</column_name>
+          <stream_name>nitrogen_fixer</stream_name>
+        </field>
+        <field>
+          <column_name>supports_wildlife</column_name>
+          <stream_name>supports_wildlife</stream_name>
+        </field>
+        <field>
+          <column_name>flower_type</column_name>
+          <stream_name>flower_type</stream_name>
+        </field>
+        <field>
+          <column_name>pollinators</column_name>
+          <stream_name>pollinators</stream_name>
+        </field>
+        <field>
+          <column_name>pollution</column_name>
+          <stream_name>pollution</stream_name>
+        </field>
+        <field>
+          <column_name>cultivation_details</column_name>
+          <stream_name>cultivation_details</stream_name>
+        </field>
+        <field>
+          <column_name>known_hazards</column_name>
+          <stream_name>known_hazards</stream_name>
+        </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>1344</xloc>
+      <yloc>144</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Value Mapper flower type</name>
+    <type>ValueMapper</type>
+    <description/>
+    <distribute>N</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <field_to_use>Flower Type</field_to_use>
+    <target_field>flower_type</target_field>
+    <non_match_default/>
+    <fields>
+      <field>
+        <source_value>H</source_value>
+        <target_value>1</target_value>
+      </field>
+      <field>
+        <source_value>M</source_value>
+        <target_value>2</target_value>
+      </field>
+      <field>
+        <source_value>D</source_value>
+        <target_value>3</target_value>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>496</xloc>
+      <yloc>416</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

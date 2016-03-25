@@ -547,7 +547,7 @@ class Cultivar(models.Model):
     medicinal = models.ManyToManyField(MedicinalUse, blank=True, through='Medicinal')
     scented = models.NullBooleanField(default=False, blank=True, null=True)
     wind_tolerance = models.IntegerField(blank=True, null=True)
-    upperhardiness = models.IntegerField(default=0, blank=True, null=True)
+    hardiness = models.IntegerField(default=0, blank=True, null=True)
     range = models.CharField(max_length=100, blank=True, null=True)
     frost_tender = models.NullBooleanField(default=True, blank=True, null=True)
     leaf_startmonth = models.IntegerField(blank=True, choices=MONTH, null=True)

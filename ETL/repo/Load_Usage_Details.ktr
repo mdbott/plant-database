@@ -137,7 +137,6 @@
   <hop> <from>Database lookup plantid</from><to>Database lookup plant medicinal use</to><enabled>Y</enabled> </hop>
   <hop> <from>Database lookup plant medicinal use</from><to>Database lookup medicinal rating</to><enabled>Y</enabled> </hop>
   <hop> <from>Database lookup medicinal rating</from><to>Table output medicinal</to><enabled>Y</enabled> </hop>
-  <hop> <from>Database lookup medicinal rating</from><to>Microsoft Excel Output</to><enabled>N</enabled> </hop>
   <hop> <from>Species Database Table input</from><to>Split field to rows</to><enabled>Y</enabled> </hop>
   <hop> <from>Split field to rows</from><to>Database lookup plantid 2</to><enabled>Y</enabled> </hop>
   <hop> <from>String operations</from><to>Select values</to><enabled>Y</enabled> </hop>
@@ -145,6 +144,7 @@
   <hop> <from>Filter rows</from><to>String operations</to><enabled>Y</enabled> </hop>
   <hop> <from>Select values</from><to>Table output reference details</to><enabled>Y</enabled> </hop>
   <hop> <from>Select values</from><to>Microsoft Excel Output 2</to><enabled>N</enabled> </hop>
+  <hop> <from>Database lookup edibility rating</from><to>Microsoft Excel Output</to><enabled>N</enabled> </hop>
   </order>
   <step>
     <name>Database lookup edibility rating</name>
@@ -163,20 +163,20 @@
     <cache_size>0</cache_size>
     <lookup>
       <schema/>
-      <table>Species database</table>
+      <table>species database</table>
       <orderby/>
       <fail_on_multiple>N</fail_on_multiple>
       <eat_row_on_failure>N</eat_row_on_failure>
       <key>
         <name>Latin name</name>
         <field>Latin name</field>
-        <condition>LIKE</condition>
+        <condition>&#x3d;</condition>
         <name2/>
       </key>
       <value>
         <name>Rating</name>
         <rename>edibility_rating</rename>
-        <default>3</default>
+        <default>10</default>
         <type>Integer</type>
       </value>
     </lookup>
@@ -483,6 +483,48 @@
     </step>
 
   <step>
+    <name>Database lookup plantid 2</name>
+    <type>DBLookup</type>
+    <description/>
+    <distribute>N</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <connection>plantdb</connection>
+    <cache>N</cache>
+    <cache_load_all>N</cache_load_all>
+    <cache_size>0</cache_size>
+    <lookup>
+      <schema/>
+      <table>plantdb_plant</table>
+      <orderby/>
+      <fail_on_multiple>N</fail_on_multiple>
+      <eat_row_on_failure>Y</eat_row_on_failure>
+      <key>
+        <name>Latin name</name>
+        <field>legacy_pfaf_latin_name</field>
+        <condition>LIKE</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>id</name>
+        <rename>plantid</rename>
+        <default/>
+        <type>Integer</type>
+      </value>
+    </lookup>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>496</xloc>
+      <yloc>704</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
     <name>Edible Use Details table input</name>
     <type>TableInput</type>
     <description/>
@@ -504,6 +546,35 @@
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>160</xloc>
       <yloc>64</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Filter rows</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+<send_true_to>String operations</send_true_to>
+<send_false_to/>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>bookrefs</leftvalue>
+ <function>IS NOT NULL</function>
+ <rightvalue>bookrefs</rightvalue>
+ </condition>
+    </compare>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>608</xloc>
+      <yloc>672</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -551,7 +622,7 @@
     <append>N</append>
     <add_to_result_filenames>Y</add_to_result_filenames>
     <file>
-      <name>&#x2f;home&#x2f;max&#x2f;details_output.xls</name>
+      <name>&#x2f;home&#x2f;max&#x2f;edibility_output</name>
       <extention>xls</extention>
       <do_not_open_newfile_init>N</do_not_open_newfile_init>
       <create_parent_folder>N</create_parent_folder>
@@ -591,12 +662,12 @@
         <format/>
       </field>
       <field>
-        <name>medicinaluseid</name>
+        <name>edibleuseid</name>
         <type>Integer</type>
         <format/>
       </field>
       <field>
-        <name>medicinal_rating</name>
+        <name>edibility_rating</name>
         <type>Integer</type>
         <format/>
       </field>
@@ -620,8 +691,85 @@
       </custom>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>640</xloc>
-      <yloc>576</yloc>
+      <xloc>832</xloc>
+      <yloc>480</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Microsoft Excel Output 2</name>
+    <type>ExcelOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <header>Y</header>
+    <footer>N</footer>
+    <encoding/>
+    <append>N</append>
+    <add_to_result_filenames>Y</add_to_result_filenames>
+    <file>
+      <name>&#x2f;home&#x2f;max&#x2f;details_output</name>
+      <extention>xls</extention>
+      <do_not_open_newfile_init>N</do_not_open_newfile_init>
+      <create_parent_folder>N</create_parent_folder>
+      <split>N</split>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <SpecifyFormat>N</SpecifyFormat>
+      <date_time_format/>
+      <sheetname>Sheet1</sheetname>
+      <autosizecolums>N</autosizecolums>
+      <nullisblank>N</nullisblank>
+      <protect_sheet>N</protect_sheet>
+      <password>Encrypted </password>
+      <splitevery>0</splitevery>
+      <usetempfiles>N</usetempfiles>
+      <tempdirectory/>
+      </file>
+    <template>
+      <enabled>N</enabled>
+      <append>N</append>
+      <filename>template.xls</filename>
+    </template>
+    <fields>
+      <field>
+        <name>plantid</name>
+        <type>Integer</type>
+        <format/>
+      </field>
+      <field>
+        <name>bookrefs</name>
+        <type>Integer</type>
+        <format/>
+      </field>
+    </fields>
+    <custom>
+    <header_font_name>arial</header_font_name>
+    <header_font_size>10</header_font_size>
+    <header_font_bold>N</header_font_bold>
+    <header_font_italic>N</header_font_italic>
+    <header_font_underline>no</header_font_underline>
+    <header_font_orientation>horizontal</header_font_orientation>
+    <header_font_color>black</header_font_color>
+    <header_background_color>none</header_background_color>
+    <header_row_height>255</header_row_height>
+    <header_alignment>left</header_alignment>
+    <header_image/>
+    <row_font_name>arial</row_font_name>
+    <row_font_size>10</row_font_size>
+    <row_font_color>black</row_font_color>
+    <row_background_color>none</row_background_color>
+      </custom>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>784</xloc>
+      <yloc>768</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -648,6 +796,135 @@
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>512</xloc>
       <yloc>32</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Select values</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>      <field>        <name>plantid</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>bookrefs</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>        <select_unspecified>N</select_unspecified>
+      <meta>        <name>bookrefs</name>
+        <rename>bookrefs</rename>
+        <type>Integer</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>    </fields>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>928</xloc>
+      <yloc>656</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Species Database Table input</name>
+    <type>TableInput</type>
+    <description/>
+    <distribute>N</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <connection>pfaf</connection>
+    <sql>SELECT&#xa;  &#x60;Latin name&#x60;&#xa;, &#x60;Author&#x60;&#xa;, &#x60;Botanical references&#x60;&#xa;, &#x60;Family&#x60;&#xa;, &#x60;Common name&#x60;&#xa;, &#x60;Habit&#x60;&#xa;, &#x60;Deciduous&#x2f;Evergreen&#x60;&#xa;, &#x60;Height&#x60;&#xa;, &#x60;Width&#x60;&#xa;, &#x60;Hardyness&#x60;&#xa;, &#x60;In cultivation&#x3f;&#x60;&#xa;, &#x60;Medicinal&#x60;&#xa;, &#x60;Range&#x60;&#xa;, &#x60;Habitat&#x60;&#xa;, &#x60;Soil&#x60;&#xa;, &#x60;Shade&#x60;&#xa;, &#x60;Moisture&#x60;&#xa;, &#x60;Well-drained&#x60;&#xa;, &#x60;Nitrogen fixer&#x60;&#xa;, &#x60;pH&#x60;&#xa;, &#x60;Acid&#x60;&#xa;, &#x60;Alkaline&#x60;&#xa;, &#x60;Saline&#x60;&#xa;, &#x60;Wind&#x60;&#xa;, &#x60;Growth rate&#x60;&#xa;, &#x60;Pollution&#x60;&#xa;, &#x60;Poor soil&#x60;&#xa;, &#x60;Drought&#x60;&#xa;, &#x60;Wildlife&#x60;&#xa;, &#x60;Woodland&#x60;&#xa;, &#x60;Meadow&#x60;&#xa;, &#x60;Wall&#x60;&#xa;, &#x60;In leaf&#x60;&#xa;, &#x60;Flowering time&#x60;&#xa;, &#x60;Seed ripens&#x60;&#xa;, &#x60;Flower Type&#x60;&#xa;, &#x60;Pollinators&#x60;&#xa;, &#x60;Self-fertile&#x60;&#xa;, &#x60;Known hazards&#x60;&#xa;, &#x60;Synonyms&#x60;&#xa;, &#x60;Cultivation details&#x60;&#xa;, &#x60;Edible uses&#x60;&#xa;, &#x60;Uses notes&#x60;&#xa;, &#x60;Propagation 1&#x60;&#xa;, &#x60;Cultivars&#x60;&#xa;, &#x60;Cultivars in cultivation&#x60;&#xa;, &#x60;Heavy clay&#x60;&#xa;, &#x60;Pull-out&#x60;&#xa;, &#x60;Last update&#x60;&#xa;, &#x60;Record checked&#x60;&#xa;, &#x60;Rating&#x60;&#xa;, &#x60;FrostTender&#x60;&#xa;, &#x60;SiteSpecificNotes&#x60;&#xa;, &#x60;Scented&#x60;&#xa;, &#x60;Medicinal Rating&#x60;&#xa;, &#x60;In leaf start&#x60;&#xa;, &#x60;In leaf end&#x60;&#xa;, &#x60;Flowering time start&#x60;&#xa;, &#x60;Flowering time end&#x60;&#xa;, &#x60;Seed ripens start&#x60;&#xa;, &#x60;Seed ripens end&#x60;&#xa;, &#x60;Palatable_rating&#x60;&#xa;, &#x60;Use_rating&#x60;&#xa;, &#x60;Grow_rating&#x60;&#xa;, &#x60;Overall_rating&#x60;&#xa;FROM &#x60;species database&#x60;&#xa;</sql>
+    <limit/>
+    <lookup/>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <lazy_conversion_active>N</lazy_conversion_active>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>176</xloc>
+      <yloc>656</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Split field to rows</name>
+    <type>SplitFieldToRows3</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+   <splitfield>Botanical references</splitfield>
+   <delimiter>,</delimiter>
+   <newfield>bookrefs</newfield>
+   <rownum>N</rownum>
+   <rownum_field/>
+   <resetrownumber>Y</resetrownumber>
+   <delimiter_is_regex>N</delimiter_is_regex>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>368</xloc>
+      <yloc>688</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>String operations</name>
+    <type>StringOperations</type>
+    <description/>
+    <distribute>N</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <in_stream_name>bookrefs</in_stream_name>
+        <out_stream_name/>
+        <trim_type>both</trim_type>
+        <lower_upper>none</lower_upper>
+        <padding_type>none</padding_type>
+        <pad_char/>
+        <pad_len/>
+        <init_cap>no</init_cap>
+        <mask_xml>none</mask_xml>
+        <digits>none</digits>
+        <remove_special_characters>espace</remove_special_characters>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>784</xloc>
+      <yloc>656</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -799,100 +1076,6 @@
     </step>
 
   <step>
-    <name>Species Database Table input</name>
-    <type>TableInput</type>
-    <description/>
-    <distribute>N</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <connection>pfaf</connection>
-    <sql>SELECT&#xa;  &#x60;Latin name&#x60;&#xa;, &#x60;Author&#x60;&#xa;, &#x60;Botanical references&#x60;&#xa;, &#x60;Family&#x60;&#xa;, &#x60;Common name&#x60;&#xa;, &#x60;Habit&#x60;&#xa;, &#x60;Deciduous&#x2f;Evergreen&#x60;&#xa;, &#x60;Height&#x60;&#xa;, &#x60;Width&#x60;&#xa;, &#x60;Hardyness&#x60;&#xa;, &#x60;In cultivation&#x3f;&#x60;&#xa;, &#x60;Medicinal&#x60;&#xa;, &#x60;Range&#x60;&#xa;, &#x60;Habitat&#x60;&#xa;, &#x60;Soil&#x60;&#xa;, &#x60;Shade&#x60;&#xa;, &#x60;Moisture&#x60;&#xa;, &#x60;Well-drained&#x60;&#xa;, &#x60;Nitrogen fixer&#x60;&#xa;, &#x60;pH&#x60;&#xa;, &#x60;Acid&#x60;&#xa;, &#x60;Alkaline&#x60;&#xa;, &#x60;Saline&#x60;&#xa;, &#x60;Wind&#x60;&#xa;, &#x60;Growth rate&#x60;&#xa;, &#x60;Pollution&#x60;&#xa;, &#x60;Poor soil&#x60;&#xa;, &#x60;Drought&#x60;&#xa;, &#x60;Wildlife&#x60;&#xa;, &#x60;Woodland&#x60;&#xa;, &#x60;Meadow&#x60;&#xa;, &#x60;Wall&#x60;&#xa;, &#x60;In leaf&#x60;&#xa;, &#x60;Flowering time&#x60;&#xa;, &#x60;Seed ripens&#x60;&#xa;, &#x60;Flower Type&#x60;&#xa;, &#x60;Pollinators&#x60;&#xa;, &#x60;Self-fertile&#x60;&#xa;, &#x60;Known hazards&#x60;&#xa;, &#x60;Synonyms&#x60;&#xa;, &#x60;Cultivation details&#x60;&#xa;, &#x60;Edible uses&#x60;&#xa;, &#x60;Uses notes&#x60;&#xa;, &#x60;Propagation 1&#x60;&#xa;, &#x60;Cultivars&#x60;&#xa;, &#x60;Cultivars in cultivation&#x60;&#xa;, &#x60;Heavy clay&#x60;&#xa;, &#x60;Pull-out&#x60;&#xa;, &#x60;Last update&#x60;&#xa;, &#x60;Record checked&#x60;&#xa;, &#x60;Rating&#x60;&#xa;, &#x60;FrostTender&#x60;&#xa;, &#x60;SiteSpecificNotes&#x60;&#xa;, &#x60;Scented&#x60;&#xa;, &#x60;Medicinal Rating&#x60;&#xa;, &#x60;In leaf start&#x60;&#xa;, &#x60;In leaf end&#x60;&#xa;, &#x60;Flowering time start&#x60;&#xa;, &#x60;Flowering time end&#x60;&#xa;, &#x60;Seed ripens start&#x60;&#xa;, &#x60;Seed ripens end&#x60;&#xa;, &#x60;Palatable_rating&#x60;&#xa;, &#x60;Use_rating&#x60;&#xa;, &#x60;Grow_rating&#x60;&#xa;, &#x60;Overall_rating&#x60;&#xa;FROM &#x60;species database&#x60;&#xa;</sql>
-    <limit/>
-    <lookup/>
-    <execute_each_row>N</execute_each_row>
-    <variables_active>N</variables_active>
-    <lazy_conversion_active>N</lazy_conversion_active>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>176</xloc>
-      <yloc>656</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Split field to rows</name>
-    <type>SplitFieldToRows3</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-   <splitfield>Botanical references</splitfield>
-   <delimiter>,</delimiter>
-   <newfield>bookrefs</newfield>
-   <rownum>N</rownum>
-   <rownum_field/>
-   <resetrownumber>Y</resetrownumber>
-   <delimiter_is_regex>N</delimiter_is_regex>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>368</xloc>
-      <yloc>688</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Database lookup plantid 2</name>
-    <type>DBLookup</type>
-    <description/>
-    <distribute>N</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <connection>plantdb</connection>
-    <cache>N</cache>
-    <cache_load_all>N</cache_load_all>
-    <cache_size>0</cache_size>
-    <lookup>
-      <schema/>
-      <table>plantdb_plant</table>
-      <orderby/>
-      <fail_on_multiple>N</fail_on_multiple>
-      <eat_row_on_failure>Y</eat_row_on_failure>
-      <key>
-        <name>Latin name</name>
-        <field>legacy_pfaf_latin_name</field>
-        <condition>LIKE</condition>
-        <name2/>
-      </key>
-      <value>
-        <name>id</name>
-        <rename>plantid</rename>
-        <default/>
-        <type>Integer</type>
-      </value>
-    </lookup>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>496</xloc>
-      <yloc>704</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
     <name>Table output reference details</name>
     <type>TableOutput</type>
     <description/>
@@ -934,189 +1117,6 @@
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>1072</xloc>
       <yloc>736</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Select values</name>
-    <type>SelectValues</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <fields>      <field>        <name>plantid</name>
-        <rename/>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>bookrefs</name>
-        <rename/>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>        <select_unspecified>N</select_unspecified>
-      <meta>        <name>bookrefs</name>
-        <rename>bookrefs</rename>
-        <type>Integer</type>
-        <length>-2</length>
-        <precision>-2</precision>
-        <conversion_mask/>
-        <date_format_lenient>false</date_format_lenient>
-        <date_format_locale/>
-        <date_format_timezone/>
-        <lenient_string_to_number>false</lenient_string_to_number>
-        <encoding/>
-        <decimal_symbol/>
-        <grouping_symbol/>
-        <currency_symbol/>
-        <storage_type/>
-      </meta>    </fields>     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>928</xloc>
-      <yloc>656</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>String operations</name>
-    <type>StringOperations</type>
-    <description/>
-    <distribute>N</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <fields>
-      <field>
-        <in_stream_name>bookrefs</in_stream_name>
-        <out_stream_name/>
-        <trim_type>both</trim_type>
-        <lower_upper>none</lower_upper>
-        <padding_type>none</padding_type>
-        <pad_char/>
-        <pad_len/>
-        <init_cap>no</init_cap>
-        <mask_xml>none</mask_xml>
-        <digits>none</digits>
-        <remove_special_characters>espace</remove_special_characters>
-      </field>
-    </fields>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>784</xloc>
-      <yloc>656</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Filter rows</name>
-    <type>FilterRows</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-<send_true_to>String operations</send_true_to>
-<send_false_to/>
-    <compare>
-<condition>
- <negated>N</negated>
- <leftvalue>bookrefs</leftvalue>
- <function>IS NOT NULL</function>
- <rightvalue>bookrefs</rightvalue>
- </condition>
-    </compare>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>608</xloc>
-      <yloc>672</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Microsoft Excel Output 2</name>
-    <type>ExcelOutput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <header>Y</header>
-    <footer>N</footer>
-    <encoding/>
-    <append>N</append>
-    <add_to_result_filenames>Y</add_to_result_filenames>
-    <file>
-      <name>&#x2f;home&#x2f;max&#x2f;details_output</name>
-      <extention>xls</extention>
-      <do_not_open_newfile_init>N</do_not_open_newfile_init>
-      <create_parent_folder>N</create_parent_folder>
-      <split>N</split>
-      <add_date>N</add_date>
-      <add_time>N</add_time>
-      <SpecifyFormat>N</SpecifyFormat>
-      <date_time_format/>
-      <sheetname>Sheet1</sheetname>
-      <autosizecolums>N</autosizecolums>
-      <nullisblank>N</nullisblank>
-      <protect_sheet>N</protect_sheet>
-      <password>Encrypted </password>
-      <splitevery>0</splitevery>
-      <usetempfiles>N</usetempfiles>
-      <tempdirectory/>
-      </file>
-    <template>
-      <enabled>N</enabled>
-      <append>N</append>
-      <filename>template.xls</filename>
-    </template>
-    <fields>
-      <field>
-        <name>plantid</name>
-        <type>Integer</type>
-        <format/>
-      </field>
-      <field>
-        <name>bookrefs</name>
-        <type>Integer</type>
-        <format/>
-      </field>
-    </fields>
-    <custom>
-    <header_font_name>arial</header_font_name>
-    <header_font_size>10</header_font_size>
-    <header_font_bold>N</header_font_bold>
-    <header_font_italic>N</header_font_italic>
-    <header_font_underline>no</header_font_underline>
-    <header_font_orientation>horizontal</header_font_orientation>
-    <header_font_color>black</header_font_color>
-    <header_background_color>none</header_background_color>
-    <header_row_height>255</header_row_height>
-    <header_alignment>left</header_alignment>
-    <header_image/>
-    <row_font_name>arial</row_font_name>
-    <row_font_size>10</row_font_size>
-    <row_font_color>black</row_font_color>
-    <row_background_color>none</row_background_color>
-      </custom>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>784</xloc>
-      <yloc>768</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
