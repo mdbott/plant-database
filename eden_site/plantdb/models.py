@@ -2,6 +2,7 @@
 from django.contrib.gis.db import models
 from colorfield.fields import ColorField
 from .fields import RGBColorField
+#from functools import partial
 # from threading import local
 #
 # _thread_locals = local()
@@ -309,7 +310,6 @@ class Plant(models.Model):
     flower_type = models.IntegerField(blank=True, choices=FlowerType, null=True)
     pollinators = models.CharField(max_length=1024, blank=True, default='N', null=True)
     self_fertile = models.BooleanField(default=False)
-
     pollution = models.BooleanField(default=False)
     mineralInteraction = models.ManyToManyField(Mineral, blank=True, through='MineralInteraction')
     locationInteraction = models.ManyToManyField(PlantLocation, blank=True, through='LocationInteraction')
@@ -317,6 +317,7 @@ class Plant(models.Model):
     cultivation_details = models.TextField(max_length=10024, blank=True, null=True)
     propagation_details = models.ManyToManyField(Propagation, blank=True, through='PropagationDetails')
     known_hazards = models.TextField(blank=True, null=True)
+    source_reference = models.ForeignKey(References, on_delete=models.CASCADE, related_name='source_entries')
     references = models.ManyToManyField(References, blank=True, through='ReferenceDetail')
 
     # class Meta:
@@ -427,6 +428,7 @@ class Rootstock(models.Model):
 
     class Meta:
         unique_together = ('name', 'plant')
+
 
     # def _product_list(self, cls):
     #     """
@@ -558,6 +560,7 @@ class Cultivar(models.Model):
     production_endmonth = models.IntegerField(blank=True, choices=MONTH, null=True)
     seed_start_month = models.IntegerField(blank=True, choices=MONTH, null=True)
     seed_endmonth = models.IntegerField(blank=True, choices=MONTH, null=True)
+    native_rootstock = models.ForeignKey(Rootstock, on_delete=models.CASCADE)
     # Equivalent to 'F' full shade in pfaf shade rating
     # semi_shade              = models.BooleanField(default=True)  # Equivalent to 'S' semi shade in pfaf shade rating
     # no_shade                = models.BooleanField(default=True)  # Equivalent to 'N' no shade in pfaf shade rating
@@ -751,6 +754,7 @@ class Vegetation(models.Model):
     plant = models.ForeignKey(Plant)
     cultivar = models.ForeignKey(Cultivar)
     rootstock = models.ForeignKey(Rootstock)
+    grafted = models.BooleanField(default=False)
     locations = models.PointField()
     comment = models.CharField(max_length=50, blank=True, null=False)
     germination_date = models.DateTimeField(blank=True, null=True)
