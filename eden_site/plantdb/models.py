@@ -755,8 +755,8 @@ class Vegetation(models.Model):
     cultivar = models.ForeignKey(Cultivar)
     rootstock = models.ForeignKey(Rootstock)
     grafted = models.BooleanField(default=False)
-    locations = models.PointField()
-    comment = models.CharField(max_length=50, blank=True, null=False)
+    locations = models.PointField(srid=3857)
+    comment = models.TextField(blank=True, null=True)
     germination_date = models.DateTimeField(blank=True, null=True)
     objects = models.GeoManager()
 

@@ -1,0 +1,10 @@
+Django==1.9.5
+django-baker==0.11
+django-colorfield==0.1.10
+django-colorful==1.1.0
+django-grappelli==2.8.1
+django-nested-admin==2.2.6
+django-nested-inline==0.3.6
+django-paintstore==0.2
+psycopg2==2.6.1
+six==1.10.0
