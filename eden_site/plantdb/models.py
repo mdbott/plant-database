@@ -406,7 +406,7 @@ class Rootstock(models.Model):
         (Medium, 'Medium (loamy) soil'),
         (Heavy, 'Heavy (clay) soil')
     )
-    name = models.CharField(max_length=100, default='Base Rootstock')
+    rootstockname = models.CharField(max_length=100, default='Base Rootstock')
     base_rootstock = models.BooleanField(default=False)
     notes_on_rootstock = models.TextField(blank=True, null=True)
     plant = models.ForeignKey(Plant)
@@ -424,10 +424,10 @@ class Rootstock(models.Model):
     soildiseaseinteractions = models.ManyToManyField(RootPathogen, blank=True, through='RootPathogenResistance')
 
     def __unicode__(self):
-        return self.name
+        return self.rootstockname
 
     class Meta:
-        unique_together = ('name', 'plant')
+        unique_together = ('rootstockname', 'plant')
 
 
     # def _product_list(self, cls):
