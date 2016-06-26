@@ -540,6 +540,51 @@ class Cultivar(models.Model):
         (NOVEMBER, 'November'),
         (DECEMBER, 'December')
     )
+
+    Hardiness_Zone =(
+        ('0a', '0a 	< −53.9 °C −65 °F'),
+        ('0b', '0b 	−53.9 °C −65 °F to	−51.1 °C −60 °F'),
+        ('1a', '1a 	−51.1 °C −60 °F 	−48.3 °C (−55 °F)'),
+        ('1b', '1b 	−48.3 °C −55 °F 	−45.6 °C (−50 °F)'),
+        ('2a', '2a 	−45.6 °C (−50 °F) 	−42.8 °C (−45 °F)'),
+        ('2b', '2b 	−42.8 °C (−45 °F) 	−40 °C (−40 °F)'),
+        ('3a', '3a 	−40 °C (−40 °F) 	−37.2 °C (−35 °F)'),
+        ('3b', '3b 	−37.2 °C (−35 °F) 	−34.4 °C (−30 °F)'),
+        ('4a', '4a 	−34.4 °C (−30 °F) 	−31.7 °C (−25 °F)'),
+        ('4b', '4b 	−31.7 °C (−25 °F) 	−28.9 °C (−20 °F)'),
+        ('5a', '5a 	−28.9 °C (−20 °F) 	−26.1 °C (−15 °F)'),
+        ('5b', '5b 	−26.1 °C (−15 °F) 	−23.3 °C (−10 °F)'),
+        ('6a', '6a 	−23.3 °C (−10 °F) 	−20.6 °C (−5 °F)'),
+        ('6b', '6b 	−20.6 °C (−5 °F) 	−17.8 °C (0 °F)'),
+        ('7a', '7a 	−17.8 °C (0 °F) 	−15 °C (5 °F)'),
+        ('7b', '7b 	−15 °C (5 °F) 	−12.2 °C (10 °F)'),
+        ('8a', '8a 	−12.2 °C (10 °F) 	−9.4 °C (15 °F)'),
+        ('8b', '8b 	−9.4 °C (15 °F) 	−6.7 °C (20 °F)'),
+        ('9a', '9a 	−6.7 °C (20 °F) 	−3.9 °C (25 °F)'),
+        ('9b', '9b 	−3.9 °C (25 °F) 	−1.1 °C (30 °F)'),
+        ('10a', '10a 	−1.1 °C (30 °F) 	+1.7 °C (35 °F)'),
+        ('10b', '10b 	+1.7 °C (35 °F) 	+4.4 °C (40 °F)'),
+        ('11a', '11a 	+4.4 °C (40 °F) 	+7.2 °C (45 °F)'),
+        ('11b', '11b 	+7.2 °C (45 °F) 	+10 °C (50 °F)'),
+        ('12a', '12a 	+10 °C (50 °F) 	+12.8 °C (55 °F)'),
+        ('12b', '12b 	> +12.8 °C (55 °F)')
+    )
+
+    Heat_Zone=(
+        (1, 'Heat Zone 1: 0 days over 30°C'),
+        (2, 'Heat Zone 2: 1 to 7 days over 30°C'),
+        (3, 'Heat Zone 3: 8 to 14 days over 30°C'),
+        (4, 'Heat Zone 4: 15 to 30 days over 30°C'),
+        (5, 'Heat Zone 5: 31 to 45 days over 30°C'),
+        (6, 'Heat Zone 6: 46 to	60 days over 30°C'),
+        (7, 'Heat Zone 7: 61 to 90 days over 30°C'),
+        (8, 'Heat Zone 8: 91 to 120 days over 30°C'),
+        (9, 'Heat Zone 9: 121 to 150 days over 30°C'),
+        (10, 'Heat Zone 10: 151 to 180 days over 30°C'),
+        (11, 'Heat Zone 11: 181 to 210 days over 30°C'),
+        (12, 'Heat Zone 12: more than 210 days over 30°C')
+    )
+
     name = models.CharField(max_length=100, default='Base Cultivar', blank=True)
     base_cultivar = models.BooleanField(default=False)
     notes_on_cultivar = models.TextField(blank=True, null=True)
@@ -549,7 +594,10 @@ class Cultivar(models.Model):
     medicinal = models.ManyToManyField(MedicinalUse, blank=True, through='Medicinal')
     scented = models.NullBooleanField(default=False, blank=True, null=True)
     wind_tolerance = models.IntegerField(blank=True, null=True)
-    hardiness = models.IntegerField(default=0, blank=True, null=True)
+    hardiness_lower_limit = models.CharField(max_length=3, choices=Hardiness_Zone, blank=True, null=True)
+    hardiness_upper_limit = models.CharField(max_length=3, choices=Hardiness_Zone, blank=True, null=True)
+    heatzone_lower_limit = models.IntegerField(default=0, choices=Heat_Zone, blank=True, null=True)
+    heatzone_upper_limit = models.IntegerField(default=0, choices=Heat_Zone, blank=True, null=True)
     range = models.CharField(max_length=100, blank=True, null=True)
     frost_tender = models.NullBooleanField(default=True, blank=True, null=True)
     leaf_startmonth = models.IntegerField(blank=True, choices=MONTH, null=True)
@@ -757,7 +805,7 @@ class Vegetation(models.Model):
     grafted = models.BooleanField(default=False)
     locations = models.PointField(srid=3857)
     comment = models.TextField(blank=True, null=True)
-    germination_date = models.DateTimeField(blank=True, null=True)
+    germination_date = models.DateField(blank=True, null=True)
     objects = models.GeoManager()
 
     def __unicode__(self):
