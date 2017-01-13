@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.gis import admin
 from nested_admin import NestedStackedInline, TabularInline, NestedAdmin
 from .models import Plant, Cultivar, Rootstock, MineralInteraction, LocationInteraction, Edible, \
-    RootPathogenResistance, Usage, Medicinal, MedicinalUse
+    RootPathogenResistance, Usage, Medicinal, MedicinalUse, CultivarImage
 from .models import Mineral, PlantLocation, EdibleUse, RootPathogen, Vegetation, MoistureZone, \
     SalinityZone, pHZone, WindZone, ColourTest, PlantUse, References, ReferenceDetail
 
@@ -33,6 +33,14 @@ class MedicinalInline(TabularInline):
     extra = 1
 
 
+class CultivarImageInline(TabularInline):
+    model = CultivarImage
+    extra = 1
+
+    fields = ('image_tag', 'picture', 'caption', )
+    readonly_fields = ('image_tag',)
+
+
 class CultivarAdminForm(forms.ModelForm):
     class Meta:
         model = Vegetation
@@ -55,7 +63,7 @@ class CultivarAdminForm(forms.ModelForm):
 class CultivarStackedInline(NestedStackedInline):
     form = CultivarAdminForm
     model = Cultivar
-    inlines = [EdibleInline, MedicinalInline]
+    inlines = [EdibleInline, MedicinalInline, CultivarImageInline]
     extra = 0
 
     def save_model(self, request, obj, form, change):

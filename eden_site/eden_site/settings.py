@@ -14,7 +14,11 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 import os
 from django.core.exceptions import ImproperlyConfigured
 
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 def get_env_variable(var_name):

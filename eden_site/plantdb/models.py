@@ -3,6 +3,8 @@
 from django.contrib.gis.db import models
 from colorfield.fields import ColorField
 from .fields import RGBColorField
+from django.utils.safestring import mark_safe
+import os
 #from functools import partial
 # from threading import local
 #
@@ -511,6 +513,32 @@ class MedicinalUse(models.Model):
 
     def __unicode__(self):
         return self.use
+
+    
+def image_upload_to(instance, filename):
+    genus = instance.cultivar.plant.genus
+    species = instance.cultivar.plant.species
+    first_letter = genus[0].capitalize()
+    return 'plantimages/' + first_letter + os.sep + genus + os.sep + filename
+
+
+# def image_default_caption(current_cultivar):
+#     related_plant = Plant.objects.filter(cultivar=current_cultivar)
+#     genus = related_plant.genus
+#     species = related_plant.species
+#     return 'Image of ' + genus.title() + ' ' + species.title()
+
+
+class CultivarImage(models.Model):
+
+    picture = models.ImageField(upload_to=image_upload_to, blank=True)
+    caption = models.CharField(max_length=100, default='Cultivar Image', blank=True)
+    cultivar = models.ForeignKey('Cultivar', related_name='images')
+
+    def image_tag(self):
+        return mark_safe('<img width="125" height="125" src="%s" />' % self.picture.url)
+
+    image_tag.short_description = 'Image'
 
 
 class Cultivar(models.Model):
