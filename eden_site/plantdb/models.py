@@ -596,7 +596,13 @@ class Cultivar(models.Model):
         (22, 'Hardiness Zone 11a 	+4.4 °C (40 °F) to +7.2 °C (45 °F)'),
         (23, 'Hardiness Zone 11b 	+7.2 °C (45 °F) to +10 °C (50 °F)'),
         (24, 'Hardiness Zone 12a 	+10 °C (50 °F) to +12.8 °C (55 °F)'),
-        (25, 'Hardiness Zone 12b 	greater than+12.8 °C (55 °F)')
+        (25, 'Hardiness Zone 12b 	+12.8 °C (55 °F) to +15.6 °C (60 °F)'),
+        (26, 'Hardiness Zone 13a 	+15.6 °C (60 °F) to +18.3 °C (65 °F)'),
+        (27, 'Hardiness Zone 13b 	+18.3 °C (65 °F) to +21.1 °C (70 °F)'),
+        (28, 'Hardiness Zone 14a 	+21.1 °C (70 °F) to +23.9 °C (75 °F)'),
+        (29, 'Hardiness Zone 14b 	+23.9 °C (75 °F) to +26.7 °C (80 °F)'),
+        (30, 'Hardiness Zone 15a 	+26.7 °C (80 °F) to +29.4 °C (85 °F)'),
+        (31, 'Hardiness Zone 15b 	+29.4 °C (85 °F) to +32.2 °C (90 °F)'),
     )
 
     Heat_Zone = (
