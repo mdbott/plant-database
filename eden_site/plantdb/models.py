@@ -1,11 +1,11 @@
 # from django.db import models
 # -*- coding: utf-8 -*-
 from django.contrib.gis.db import models
-from colorfield.fields import ColorField
+# from colorfield.fields import ColorField
 from .fields import RGBColorField
 from django.utils.safestring import mark_safe
 import os
-#from functools import partial
+# from functools import partial
 # from threading import local
 #
 # _thread_locals = local()
@@ -296,7 +296,6 @@ class Plant(models.Model):
     ssp = models.CharField(max_length=100, blank=True, null=True)
     common_name = models.CharField(max_length=100, blank=True, null=True)
     plant_function = models.IntegerField(blank=True, choices=PlantFunction, null=True)
-    plant_uses = models.ManyToManyField(PlantUse, blank=True, through='Usage')
     form = models.IntegerField(blank=True, choices=Form, null=True)
     habitat = models.CharField(max_length=1024, blank=True, null=True)
     # icon_path = models.CharField(max_length=100, blank=True, null=True)
@@ -432,7 +431,6 @@ class Rootstock(models.Model):
     class Meta:
         unique_together = ('rootstockname', 'plant')
 
-
     # def _product_list(self, cls):
     #     """
     #     return a list containing the one product_id contained in the request URL,
@@ -517,7 +515,7 @@ class MedicinalUse(models.Model):
     
 def image_upload_to(instance, filename):
     genus = instance.cultivar.plant.genus
-    species = instance.cultivar.plant.species
+    # species = instance.cultivar.plant.species
     first_letter = genus[0].capitalize()
     return 'plantimages/' + first_letter + os.sep + genus + os.sep + filename
 
@@ -627,6 +625,7 @@ class Cultivar(models.Model):
     plant = models.ForeignKey(Plant)
     edible = models.ManyToManyField(EdibleUse, blank=True, through='Edible')
     medicinal = models.ManyToManyField(MedicinalUse, blank=True, through='Medicinal')
+    other_uses = models.ManyToManyField(PlantUse, blank=True, through='Usage')
     scented = models.NullBooleanField(default=False, blank=True, null=True)
     wind_tolerance = models.IntegerField(blank=True, null=True)
     hardiness_lower_limit = models.IntegerField(default=17, choices=Hardiness_Zone, blank=True, null=True)
@@ -664,14 +663,14 @@ class Edible(models.Model):
             (4, 'Good'),
             (5, 'Excellent'))
 
-    plant = models.ForeignKey(Cultivar, related_name='plant_entries')
+    cultivar = models.ForeignKey(Cultivar, related_name='plant_entries')
     edible_use = models.ForeignKey(EdibleUse)
     edibility_rating = models.IntegerField(blank=True, choices=Edibility, null=True)
-    #edible_link = models.ManyToManyField(ReferenceList, blank=True, through='EdibleReference')
+    # edible_link = models.ManyToManyField(ReferenceList, blank=True, through='EdibleReference')
     notes = models.TextField(max_length=100, blank=True, null=True)
 
     class Meta:
-        ordering = ['plant']
+        ordering = ['cultivar']
 
 
 class Medicinal(models.Model):
@@ -683,14 +682,24 @@ class Medicinal(models.Model):
             (4, 'Good'),
             (5, 'Excellent'))
 
-    plant = models.ForeignKey(Cultivar, related_name='plant_entry')
+    cultivar = models.ForeignKey(Cultivar, related_name='plant_entry')
     medicinal_use = models.ForeignKey(MedicinalUse)
     medicinal_rating = models.IntegerField(blank=True, choices=MedicinalValue, null=True)
-    #medicinal_link = models.ManyToManyField(ReferenceList, blank=True, through='MedicinalReference')
+    # medicinal_link = models.ManyToManyField(ReferenceList, blank=True, through='MedicinalReference')
     notes = models.TextField(max_length=100, blank=True, null=True)
 
     class Meta:
-        ordering = ['plant']
+        ordering = ['cultivar']
+
+
+class Usage(models.Model):
+
+    cultivar = models.ForeignKey(Cultivar)
+    plant_use = models.ForeignKey(PlantUse)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['cultivar']
 
 
 # Plant Mineral Relationship Class
@@ -806,16 +815,6 @@ class ReferenceDetail(models.Model):
 
     plant = models.ForeignKey(Plant)
     reference = models.ForeignKey(References)
-    description = models.TextField(blank=True, null=True)
-
-    class Meta:
-        ordering = ['plant']
-
-
-class Usage(models.Model):
-
-    plant = models.ForeignKey(Plant)
-    plant_use = models.ForeignKey(PlantUse)
     description = models.TextField(blank=True, null=True)
 
     class Meta:

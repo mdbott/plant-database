@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>Load_Usage_Details</name>
+    <name>Load_Extra_Plant_Details</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -133,6 +133,7 @@
   <hop> <from>Database lookup edibility rating</from><to>Table output Edible</to><enabled>Y</enabled> </hop>
   <hop> <from>Medicinal Uses Table Input</from><to>Database lookup plantid</to><enabled>Y</enabled> </hop>
   <hop> <from>Database lookup plantid</from><to>Database lookup plant medicinal use</to><enabled>Y</enabled> </hop>
+  <hop> <from>Database lookup medicinal rating</from><to>Table output medicinal</to><enabled>Y</enabled> </hop>
   <hop> <from>Species Database Table input</from><to>Split field to rows</to><enabled>Y</enabled> </hop>
   <hop> <from>Split field to rows</from><to>Database lookup plantid 2</to><enabled>Y</enabled> </hop>
   <hop> <from>String operations</from><to>Select values</to><enabled>Y</enabled> </hop>
@@ -140,7 +141,7 @@
   <hop> <from>Filter rows</from><to>String operations</to><enabled>Y</enabled> </hop>
   <hop> <from>Select values</from><to>Table output reference details</to><enabled>N</enabled> </hop>
   <hop> <from>Select values</from><to>Microsoft Excel Output 2</to><enabled>N</enabled> </hop>
-  <hop> <from>Database lookup edibility rating</from><to>Excel Output Edibility</to><enabled>N</enabled> </hop>
+  <hop> <from>Database lookup edibility rating</from><to>Microsoft Excel Output</to><enabled>Y</enabled> </hop>
   <hop> <from>Database lookup plantid 3</from><to>Filter rows 2</to><enabled>Y</enabled> </hop>
   <hop> <from>Select values 2</from><to>Table output cultivar</to><enabled>N</enabled> </hop>
   <hop> <from>Cultivars Database Table input</from><to>Add constants</to><enabled>Y</enabled> </hop>
@@ -156,10 +157,8 @@
   <hop> <from>Database lookup latin name</from><to>Database join 3</to><enabled>Y</enabled> </hop>
   <hop> <from>Database join 3</from><to>Database lookup plant use</to><enabled>Y</enabled> </hop>
   <hop> <from>Database lookup plant medicinal use</from><to>Database join 2</to><enabled>Y</enabled> </hop>
-  <hop> <from>Database lookup plant use</from><to>Excel Output plant usage</to><enabled>N</enabled> </hop>
-  <hop> <from>Database join 2</from><to>Database lookup edibility rating 2</to><enabled>Y</enabled> </hop>
-  <hop> <from>Database lookup edibility rating 2</from><to>Table output</to><enabled>N</enabled> </hop>
-  <hop> <from>Database lookup edibility rating 2</from><to>Excel Output Medicinal</to><enabled>Y</enabled> </hop>
+  <hop> <from>Database join 2</from><to>Database lookup medicinal rating</to><enabled>Y</enabled> </hop>
+  <hop> <from>Database lookup medicinal rating</from><to>Microsoft Excel Output 4</to><enabled>Y</enabled> </hop>
   </order>
   <step>
     <name>Add constants</name>
@@ -202,39 +201,6 @@
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>816</xloc>
       <yloc>528</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Add medicinal rating</name>
-    <type>Constant</type>
-    <description/>
-    <distribute>N</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <fields>
-      <field>
-        <name>medicinal_rating</name>
-        <type>Integer</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif>3</nullif>
-        <length>-1</length>
-        <precision>-1</precision>
-        <set_empty_string>N</set_empty_string>
-      </field>
-    </fields>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>464</xloc>
-      <yloc>416</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -289,8 +255,8 @@
     </parameter>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>400</xloc>
-      <yloc>304</yloc>
+      <xloc>432</xloc>
+      <yloc>272</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -299,7 +265,7 @@
     <name>Database join 2</name>
     <type>DBJoin</type>
     <description/>
-    <distribute>N</distribute>
+    <distribute>Y</distribute>
     <custom_distribution/>
     <copies>1</copies>
          <partitioning>
@@ -482,49 +448,7 @@
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>560</xloc>
-      <yloc>272</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Database lookup edibility rating 2</name>
-    <type>DBLookup</type>
-    <description/>
-    <distribute>N</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <connection>pfaf</connection>
-    <cache>N</cache>
-    <cache_load_all>N</cache_load_all>
-    <cache_size>0</cache_size>
-    <lookup>
-      <schema/>
-      <table>species database</table>
-      <orderby/>
-      <fail_on_multiple>N</fail_on_multiple>
-      <eat_row_on_failure>N</eat_row_on_failure>
-      <key>
-        <name>Latin name</name>
-        <field>Latin name</field>
-        <condition>&#x3d;</condition>
-        <name2/>
-      </key>
-      <value>
-        <name>Medicinal Rating</name>
-        <rename>medicinal_rating</rename>
-        <default>3</default>
-        <type>Integer</type>
-      </value>
-    </lookup>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>400</xloc>
-      <yloc>544</yloc>
+      <yloc>304</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -609,6 +533,48 @@
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>320</xloc>
       <yloc>96</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Database lookup medicinal rating</name>
+    <type>DBLookup</type>
+    <description/>
+    <distribute>N</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <connection>pfaf</connection>
+    <cache>N</cache>
+    <cache_load_all>N</cache_load_all>
+    <cache_size>0</cache_size>
+    <lookup>
+      <schema/>
+      <table>species database</table>
+      <orderby/>
+      <fail_on_multiple>N</fail_on_multiple>
+      <eat_row_on_failure>N</eat_row_on_failure>
+      <key>
+        <name>Latin name</name>
+        <field>Latin name</field>
+        <condition>LIKE</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>Medicinal Rating</name>
+        <rename>medicinal_rating</rename>
+        <default>3</default>
+        <type>Integer</type>
+      </value>
+    </lookup>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>432</xloc>
+      <yloc>480</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -701,7 +667,7 @@
     <name>Database lookup plant use</name>
     <type>DBLookup</type>
     <description/>
-    <distribute>N</distribute>
+    <distribute>Y</distribute>
     <custom_distribution/>
     <copies>1</copies>
          <partitioning>
@@ -733,7 +699,7 @@
     </lookup>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>784</xloc>
+      <xloc>848</xloc>
       <yloc>160</yloc>
       <draw>Y</draw>
       </GUI>
@@ -892,7 +858,91 @@
     </step>
 
   <step>
-    <name>Excel Output Edibility</name>
+    <name>Filter rows</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+<send_true_to>String operations</send_true_to>
+<send_false_to/>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>bookrefs</leftvalue>
+ <function>IS NOT NULL</function>
+ <rightvalue>bookrefs</rightvalue>
+ </condition>
+    </compare>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>512</xloc>
+      <yloc>736</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Filter rows 2</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+<send_true_to/>
+<send_false_to>Select values 2 2</send_false_to>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>Cultivar</leftvalue>
+ <function>&#x3d;</function>
+ <rightvalue/>
+ <value><name>constant</name><type>String</type><text/><length>-1</length><precision>-1</precision><isnull>Y</isnull><mask/></value> </condition>
+    </compare>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>1024</xloc>
+      <yloc>304</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Medicinal Uses Table Input</name>
+    <type>TableInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <connection>pfaf</connection>
+    <sql>SELECT&#xa;  &#x60;Latin name&#x60;&#xa;, &#x60;USE&#x60;&#xa;FROM &#x60;Medicinal use details&#x60;&#xa;</sql>
+    <limit>0</limit>
+    <lookup/>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+    <lazy_conversion_active>N</lazy_conversion_active>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>80</xloc>
+      <yloc>288</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Microsoft Excel Output</name>
     <type>ExcelOutput</type>
     <description/>
     <distribute>Y</distribute>
@@ -987,291 +1037,8 @@
       </custom>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>704</xloc>
-      <yloc>384</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Excel Output Medicinal</name>
-    <type>ExcelOutput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <header>Y</header>
-    <footer>N</footer>
-    <encoding/>
-    <append>N</append>
-    <add_to_result_filenames>Y</add_to_result_filenames>
-    <file>
-      <name>&#x2f;home&#x2f;max&#x2f;medicinal_output</name>
-      <extention>xls</extention>
-      <do_not_open_newfile_init>N</do_not_open_newfile_init>
-      <create_parent_folder>N</create_parent_folder>
-      <split>N</split>
-      <add_date>N</add_date>
-      <add_time>N</add_time>
-      <SpecifyFormat>N</SpecifyFormat>
-      <date_time_format/>
-      <sheetname>Sheet1</sheetname>
-      <autosizecolums>N</autosizecolums>
-      <nullisblank>N</nullisblank>
-      <protect_sheet>N</protect_sheet>
-      <password>Encrypted </password>
-      <splitevery>0</splitevery>
-      <usetempfiles>N</usetempfiles>
-      <tempdirectory/>
-      </file>
-    <template>
-      <enabled>N</enabled>
-      <append>N</append>
-      <filename>template.xls</filename>
-    </template>
-    <fields>
-      <field>
-        <name>Latin name</name>
-        <type>String</type>
-        <format/>
-      </field>
-      <field>
-        <name>USE</name>
-        <type>String</type>
-        <format/>
-      </field>
-      <field>
-        <name>plantid</name>
-        <type>Integer</type>
-        <format/>
-      </field>
-      <field>
-        <name>medicinaluseid</name>
-        <type>Integer</type>
-        <format/>
-      </field>
-      <field>
-        <name>cultivarid</name>
-        <type>Integer</type>
-        <format/>
-      </field>
-      <field>
-        <name>cultivarname</name>
-        <type>String</type>
-        <format/>
-      </field>
-      <field>
-        <name>medicinal_rating</name>
-        <type>Integer</type>
-        <format/>
-      </field>
-    </fields>
-    <custom>
-    <header_font_name>arial</header_font_name>
-    <header_font_size>10</header_font_size>
-    <header_font_bold>N</header_font_bold>
-    <header_font_italic>N</header_font_italic>
-    <header_font_underline>no</header_font_underline>
-    <header_font_orientation>horizontal</header_font_orientation>
-    <header_font_color>black</header_font_color>
-    <header_background_color>none</header_background_color>
-    <header_row_height>255</header_row_height>
-    <header_alignment>left</header_alignment>
-    <header_image/>
-    <row_font_name>arial</row_font_name>
-    <row_font_size>10</row_font_size>
-    <row_font_color>black</row_font_color>
-    <row_background_color>none</row_background_color>
-      </custom>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>576</xloc>
-      <yloc>592</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Excel Output plant usage</name>
-    <type>ExcelOutput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <header>Y</header>
-    <footer>N</footer>
-    <encoding/>
-    <append>N</append>
-    <add_to_result_filenames>Y</add_to_result_filenames>
-    <file>
-      <name>&#x2f;home&#x2f;max&#x2f;plant_usage_output</name>
-      <extention>xls</extention>
-      <do_not_open_newfile_init>N</do_not_open_newfile_init>
-      <create_parent_folder>N</create_parent_folder>
-      <split>N</split>
-      <add_date>N</add_date>
-      <add_time>N</add_time>
-      <SpecifyFormat>N</SpecifyFormat>
-      <date_time_format/>
-      <sheetname>Sheet1</sheetname>
-      <autosizecolums>N</autosizecolums>
-      <nullisblank>N</nullisblank>
-      <protect_sheet>N</protect_sheet>
-      <password>Encrypted </password>
-      <splitevery>0</splitevery>
-      <usetempfiles>N</usetempfiles>
-      <tempdirectory/>
-      </file>
-    <template>
-      <enabled>N</enabled>
-      <append>N</append>
-      <filename>template.xls</filename>
-    </template>
-    <fields>
-      <field>
-        <name>Latin name</name>
-        <type>String</type>
-        <format/>
-      </field>
-      <field>
-        <name>USE</name>
-        <type>String</type>
-        <format/>
-      </field>
-      <field>
-        <name>plantid</name>
-        <type>Integer</type>
-        <format/>
-      </field>
-      <field>
-        <name>cultivarid</name>
-        <type>Integer</type>
-        <format/>
-      </field>
-      <field>
-        <name>cultivarname</name>
-        <type>String</type>
-        <format/>
-      </field>
-      <field>
-        <name>useid</name>
-        <type>Integer</type>
-        <format/>
-      </field>
-    </fields>
-    <custom>
-    <header_font_name>arial</header_font_name>
-    <header_font_size>10</header_font_size>
-    <header_font_bold>N</header_font_bold>
-    <header_font_italic>N</header_font_italic>
-    <header_font_underline>no</header_font_underline>
-    <header_font_orientation>horizontal</header_font_orientation>
-    <header_font_color>black</header_font_color>
-    <header_background_color>none</header_background_color>
-    <header_row_height>255</header_row_height>
-    <header_alignment>left</header_alignment>
-    <header_image/>
-    <row_font_name>arial</row_font_name>
-    <row_font_size>10</row_font_size>
-    <row_font_color>black</row_font_color>
-    <row_background_color>none</row_background_color>
-      </custom>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>992</xloc>
-      <yloc>96</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Filter rows</name>
-    <type>FilterRows</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-<send_true_to>String operations</send_true_to>
-<send_false_to/>
-    <compare>
-<condition>
- <negated>N</negated>
- <leftvalue>bookrefs</leftvalue>
- <function>IS NOT NULL</function>
- <rightvalue>bookrefs</rightvalue>
- </condition>
-    </compare>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>480</xloc>
-      <yloc>672</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Filter rows 2</name>
-    <type>FilterRows</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-<send_true_to/>
-<send_false_to>Select values 2 2</send_false_to>
-    <compare>
-<condition>
- <negated>N</negated>
- <leftvalue>Cultivar</leftvalue>
- <function>&#x3d;</function>
- <rightvalue/>
- <value><name>constant</name><type>String</type><text/><length>-1</length><precision>-1</precision><isnull>Y</isnull><mask/></value> </condition>
-    </compare>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>1024</xloc>
-      <yloc>304</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Medicinal Uses Table Input</name>
-    <type>TableInput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <connection>pfaf</connection>
-    <sql>SELECT&#xa;  &#x60;Latin name&#x60;&#xa;, &#x60;USE&#x60;&#xa;FROM &#x60;Medicinal use details&#x60;&#xa;</sql>
-    <limit>0</limit>
-    <lookup/>
-    <execute_each_row>N</execute_each_row>
-    <variables_active>N</variables_active>
-    <lazy_conversion_active>N</lazy_conversion_active>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>80</xloc>
-      <yloc>288</yloc>
+      <xloc>544</xloc>
+      <yloc>400</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -2155,57 +1922,7 @@
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>912</xloc>
-      <yloc>400</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Table output</name>
-    <type>TableOutput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <connection>plantdb</connection>
-    <schema>public</schema>
-    <table>plantdb_medicinal</table>
-    <commit>1000</commit>
-    <truncate>N</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>Y</use_batch>
-    <specify_fields>Y</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
-    <tablename_in_table>Y</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field/>
-    <fields>
-        <field>
-          <column_name>cultivar_id</column_name>
-          <stream_name>cultivarid</stream_name>
-        </field>
-        <field>
-          <column_name>medicinal_use_id</column_name>
-          <stream_name>medicinaluseid</stream_name>
-        </field>
-        <field>
-          <column_name>medicinal_rating</column_name>
-          <stream_name>medicinal_rating</stream_name>
-        </field>
-    </fields>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>576</xloc>
-      <yloc>528</yloc>
+      <yloc>352</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -2248,7 +1965,7 @@
           <stream_name>edibility_rating</stream_name>
         </field>
         <field>
-          <column_name>cultivar_id</column_name>
+          <column_name>plant_id</column_name>
           <stream_name>cultivarid</stream_name>
         </field>
     </fields>
@@ -2355,6 +2072,56 @@
     </step>
 
   <step>
+    <name>Table output medicinal</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <connection>plantdb</connection>
+    <schema/>
+    <table>plantdb_medicinal</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>N</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>N</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
+    <fields>
+        <field>
+          <column_name>plant_id</column_name>
+          <stream_name>cultivarid</stream_name>
+        </field>
+        <field>
+          <column_name>medicinal_use_id</column_name>
+          <stream_name>medicinaluseid</stream_name>
+        </field>
+        <field>
+          <column_name>medicinal_rating</column_name>
+          <stream_name>medicinal_rating</stream_name>
+        </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>432</xloc>
+      <yloc>592</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
     <name>Table output plant use</name>
     <type>TableOutput</type>
     <description/>
@@ -2384,8 +2151,8 @@
     <return_field/>
     <fields>
         <field>
-          <column_name>cultivar_id</column_name>
-          <stream_name>cultivarid</stream_name>
+          <column_name>plant_id</column_name>
+          <stream_name>plantid</stream_name>
         </field>
         <field>
           <column_name>plant_use_id</column_name>
@@ -2442,6 +2209,108 @@
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>768</xloc>
       <yloc>912</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Microsoft Excel Output 4</name>
+    <type>ExcelOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <header>Y</header>
+    <footer>N</footer>
+    <encoding/>
+    <append>N</append>
+    <add_to_result_filenames>Y</add_to_result_filenames>
+    <file>
+      <name>&#x2f;home&#x2f;max&#x2f;medicinal_uses_output</name>
+      <extention>xls</extention>
+      <do_not_open_newfile_init>N</do_not_open_newfile_init>
+      <create_parent_folder>N</create_parent_folder>
+      <split>N</split>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <SpecifyFormat>N</SpecifyFormat>
+      <date_time_format/>
+      <sheetname>Sheet1</sheetname>
+      <autosizecolums>N</autosizecolums>
+      <nullisblank>N</nullisblank>
+      <protect_sheet>N</protect_sheet>
+      <password>Encrypted </password>
+      <splitevery>0</splitevery>
+      <usetempfiles>N</usetempfiles>
+      <tempdirectory/>
+      </file>
+    <template>
+      <enabled>N</enabled>
+      <append>N</append>
+      <filename>template.xls</filename>
+    </template>
+    <fields>
+      <field>
+        <name>Latin name</name>
+        <type>String</type>
+        <format/>
+      </field>
+      <field>
+        <name>USE</name>
+        <type>String</type>
+        <format/>
+      </field>
+      <field>
+        <name>plantid</name>
+        <type>Integer</type>
+        <format/>
+      </field>
+      <field>
+        <name>edibleuseid</name>
+        <type>Integer</type>
+        <format/>
+      </field>
+      <field>
+        <name>cultivarid</name>
+        <type>Integer</type>
+        <format/>
+      </field>
+      <field>
+        <name>cultivarname</name>
+        <type>String</type>
+        <format/>
+      </field>
+      <field>
+        <name>edibility_rating</name>
+        <type>Integer</type>
+        <format/>
+      </field>
+    </fields>
+    <custom>
+    <header_font_name>arial</header_font_name>
+    <header_font_size>10</header_font_size>
+    <header_font_bold>N</header_font_bold>
+    <header_font_italic>N</header_font_italic>
+    <header_font_underline>no</header_font_underline>
+    <header_font_orientation>horizontal</header_font_orientation>
+    <header_font_color>black</header_font_color>
+    <header_background_color>none</header_background_color>
+    <header_row_height>255</header_row_height>
+    <header_alignment>left</header_alignment>
+    <header_image/>
+    <row_font_name>arial</row_font_name>
+    <row_font_size>10</row_font_size>
+    <row_font_color>black</row_font_color>
+    <row_background_color>none</row_background_color>
+      </custom>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>608</xloc>
+      <yloc>608</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

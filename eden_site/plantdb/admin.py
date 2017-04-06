@@ -33,6 +33,11 @@ class MedicinalInline(TabularInline):
     extra = 1
 
 
+class PlantUsageStackedInline(TabularInline):
+    model = Usage
+    extra = 1
+
+
 class CultivarImageInline(TabularInline):
     model = CultivarImage
     extra = 1
@@ -63,18 +68,13 @@ class CultivarAdminForm(forms.ModelForm):
 class CultivarStackedInline(NestedStackedInline):
     form = CultivarAdminForm
     model = Cultivar
-    inlines = [EdibleInline, MedicinalInline, CultivarImageInline]
+    inlines = [EdibleInline, MedicinalInline, PlantUsageStackedInline, CultivarImageInline]
     extra = 0
 
     def save_model(self, request, obj, form, change):
         if not change:
             obj.native_rootstock = Rootstock.objects.filter(plant=obj.plant, base_rootstock=True).first()
         obj.save()
-
-
-class PlantUsageStackedInline(TabularInline):
-    model = Usage
-    extra = 1
 
 
 class MineralInteractionStackedInline(TabularInline):
@@ -98,7 +98,7 @@ class ReferenceDetailStackedInline(TabularInline):
 
 class PlantAdmin(NestedAdmin):
     list_display = ('genus', 'species', 'ssp', 'common_name')
-    inlines = [MineralInteractionStackedInline, LocationInteractionStackedInline, PlantUsageStackedInline,
+    inlines = [MineralInteractionStackedInline, LocationInteractionStackedInline,
                CultivarStackedInline, RootstockStackedInline, ReferenceDetailStackedInline]
 
 
