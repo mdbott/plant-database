@@ -1,4 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 *.sqlite3
+*/*.pyc
 .idea/*
+eden_site/eden_site/*.pyc
+eden_site/media/*
 eden_site/plantdb/fixtures/*.yaml
